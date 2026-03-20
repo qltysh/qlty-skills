@@ -1,0 +1,272 @@
+{
+  "skill_name": "setup-coverage",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/flask. When creating the PR, use: gh pr create --repo dh-sandbox/flask --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with pytest-cov coverage generation and Qlty upload step. Uses token auth (public repo). Only runs coverage on one matrix entry, not all Python versions.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/flask",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Used token auth (not OIDC) because the repo is public",
+        "Added pytest-cov for coverage generation",
+        "Coverage output format is Cobertura XML or LCOV",
+        "Only generates coverage on a single matrix entry, not all Python versions",
+        "Did not remove existing CI jobs or test configurations",
+        "CI test jobs pass on the PR",
+        "Coverage upload step shows actual coverage data in logs (not 0 lines)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/cobra. When creating the PR, use: gh pr create --repo dh-sandbox/cobra --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with Go coverage profile generation and Qlty upload. Uses native Go cover format (not Cobertura conversion). Single matrix entry upload.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/cobra",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Used go test -coverprofile for coverage generation",
+        "Uploads Go cover profile directly (not unnecessary Cobertura conversion)",
+        "Only generates coverage on a single matrix entry",
+        "CI test jobs pass on the PR",
+        "Coverage upload step shows actual coverage data in logs"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/pip-tools. When creating the PR, use: gh pr create --repo dh-sandbox/pip-tools --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with coverage uploads using server-side merging (incomplete/complete) since the test suite uses a large matrix strategy.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/pip-tools",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Used incomplete: true on upload steps for server-side merging",
+        "Used command: complete (NOT complete: true) in a final job",
+        "Did not remove existing Codecov integration",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/flagsmith. When creating the PR, use: gh pr create --repo dh-sandbox/flagsmith --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with coverage tags for the Python backend and TypeScript frontend services. Uses tags (not merging) since this is a monorepo with independent services.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/flagsmith",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Used coverage tags (tag: parameter) for separate services",
+        "Did NOT use incomplete/complete merging",
+        "Modified both backend (Python) and frontend (TypeScript) workflow files",
+        "Added coverage generation for both Python (pytest-cov or similar) and TypeScript (Jest --coverage)",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/ecto. When creating the PR, use: gh pr create --repo dh-sandbox/ecto --head qlty-coverage-integration --base master",
+      "expected_output": "PR created with lcov_ex for Elixir coverage generation and Qlty upload. Only runs coverage on one matrix entry.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/ecto",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added lcov_ex dependency to mix.exs for LCOV coverage generation",
+        "Only generates coverage on a single matrix entry, not all Elixir/OTP versions",
+        "CI test jobs pass on the PR",
+        "Coverage upload step shows actual coverage data in logs"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/gson. When creating the PR, use: gh pr create --repo dh-sandbox/gson --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with JaCoCo for Java coverage generation. Only runs on one JDK version. Uses add-prefix for path fixing.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/gson",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added JaCoCo Maven plugin for coverage generation",
+        "Only generates coverage on a single JDK matrix entry",
+        "Used add-prefix for path fixing (source is in a subdirectory)",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/RIBs. When creating the PR, use: gh pr create --repo dh-sandbox/RIBs --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with JaCoCo for Kotlin/Java coverage generation. Handles multi-module Gradle project correctly.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/RIBs",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added JaCoCo plugin for coverage generation",
+        "Generates standard JaCoCo XML reports (not Android coverage format)",
+        "CI test jobs pass on the PR",
+        "Coverage upload step shows actual coverage data in logs (not 0 lines, not parse errors)"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/puma. When creating the PR, use: gh pr create --repo dh-sandbox/puma --head qlty-coverage-integration --base master",
+      "expected_output": "PR created with SimpleCov for Ruby coverage. Only runs coverage on one matrix entry out of the massive Ruby version × OS matrix.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/puma",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added SimpleCov for coverage generation",
+        "Only generates coverage on a single matrix entry (not all Ruby versions and OSes)",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/ImageSharp. When creating the PR, use: gh pr create --repo dh-sandbox/ImageSharp --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with coverlet for .NET coverage generation and Qlty upload.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/ImageSharp",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added coverlet for .NET coverage generation",
+        "Coverage output format is Cobertura XML",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/cache. When creating the PR, use: gh pr create --repo dh-sandbox/cache --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with Qlty coverage upload for PHP. Uses existing PHPUnit coverage generation or adds Clover XML output.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/cache",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Coverage output format is Clover XML",
+        "CI test jobs pass on the PR",
+        "Coverage upload step shows actual coverage data in logs"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/chalk. When creating the PR, use: gh pr create --repo dh-sandbox/chalk --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with Jest coverage and Qlty upload for a JavaScript library.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/chalk",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added --coverage flag to Jest or configured coverage in package.json",
+        "Coverage output is LCOV or Istanbul format",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/standard-version. When creating the PR, use: gh pr create --repo dh-sandbox/standard-version --head qlty-coverage-integration --base master",
+      "expected_output": "PR created with Jest coverage and Qlty upload for a JavaScript project with matrix CI.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/standard-version",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added coverage generation for Jest",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 13,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/openapi-typescript. When creating the PR, use: gh pr create --repo dh-sandbox/openapi-typescript --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with coverage upload for a TypeScript multi-package project.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/openapi-typescript",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added coverage generation (vitest or similar)",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 14,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/xo. When creating the PR, use: gh pr create --repo dh-sandbox/xo --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with coverage upload for a TypeScript linter project.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/xo",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added coverage generation",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 15,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/lo. When creating the PR, use: gh pr create --repo dh-sandbox/lo --head qlty-coverage-integration --base master",
+      "expected_output": "PR created with Go coverage profile and Qlty upload.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/lo",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Used go test -coverprofile for coverage generation",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 16,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/scientist. When creating the PR, use: gh pr create --repo dh-sandbox/scientist --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with SimpleCov for Ruby coverage. Only runs on one matrix entry.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/scientist",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added SimpleCov for coverage generation",
+        "Only generates coverage on a single Ruby version matrix entry",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 17,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/commons-lang. When creating the PR, use: gh pr create --repo dh-sandbox/commons-lang --head qlty-coverage-integration --base master",
+      "expected_output": "PR created with JaCoCo for Java coverage. Handles Maven project with parallelism.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/commons-lang",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added JaCoCo Maven plugin for coverage generation",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 18,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/Sourcery. When creating the PR, use: gh pr create --repo dh-sandbox/Sourcery --head qlty-coverage-integration --base master",
+      "expected_output": "PR created with Swift coverage generation (xccov or Slather) and Qlty upload.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/Sourcery",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Added coverage generation for Swift (xccov, Slather, or llvm-cov)",
+        "CI test jobs pass on the PR"
+      ]
+    },
+    {
+      "id": 19,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/accompanist. When creating the PR, use: gh pr create --repo dh-sandbox/accompanist --head qlty-coverage-integration --base main",
+      "expected_output": "PR created with JaCoCo for Kotlin/Android coverage. Must use explicit JaCoCo plugin, NOT Android createDebugUnitTestCoverageReport which generates an unparseable format.",
+      "files": [],
+      "expectations": [
+        "Created a PR on dh-sandbox/accompanist",
+        "Used qltysh/qlty-action/coverage@v2 for upload",
+        "Used JaCoCo Gradle plugin (NOT Android createDebugUnitTestCoverageReport)",
+        "Generates standard JaCoCo XML reports",
+        "Set JACOCO_SOURCE_PATH for all modules (not just a subset)",
+        "CI test jobs pass on the PR",
+        "Coverage upload shows >0% covered lines (not 0 covered / N uncovered)"
+      ]
+    },
+    {
+      "id": 20,
+      "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/phpstan. When creating the PR, use: gh pr create --repo dh-sandbox/phpstan --head qlty-coverage-integration --base main",
+      "expected_output": "The skill should detect that this is a distribution repo with no instrumentable source code and stop, explaining that coverage should be set up in phpstan-src instead.",
+      "files": [],
+      "expectations": [
+        "Detected that this is a distribution/wrapper repo with no meaningful source code",
+        "Did NOT set up coverage on the e2e tests",
+        "Reported that coverage is not applicable for this repo",
+        "Suggested that coverage should be set up in the upstream source repo (phpstan-src) instead"
+      ]
+    }
+  ]
+}
