@@ -263,7 +263,6 @@
       "files": [],
       "expectations": [
         "Detected that this is a distribution/wrapper repo with no meaningful source code",
-        "Did NOT set up coverage on the e2e tests",
         "Reported that coverage is not applicable for this repo",
         "Suggested that coverage should be set up in the upstream source repo (phpstan-src) instead"
       ]

@@ -35,7 +35,7 @@ Pay close attention to whether coverage data is **already being generated**. Loo
 
 - Ignore any test suites which are not running in continuous integration.
 - Ignore test suites commented out in the continuous integration workflow files.
-- If the repo has no unit tests, no source code to instrument (e.g., it's a distribution/wrapper repo where the actual code lives elsewhere), or only has end-to-end tests with no meaningful source coverage, **stop here** and report that code coverage setup is not applicable for this repository. Explain why and suggest where coverage should be set up instead.
+- If the repo has no tests, or no source code to instrument (e.g., it's a distribution/wrapper repo where the actual code lives elsewhere), **stop here** and report that code coverage setup is not applicable for this repository. Explain why and suggest where coverage should be set up instead.
 
 Do NOT make any changes yet. Just produce the report and move on to Phase 2.
 
@@ -62,14 +62,14 @@ If the project is NOT generating coverage data yet, then add the minimal configu
 
 ### Decisions to Make
 
-- **Authentication method**: OIDC or coverage token?
-  - Public GitHub repos: use a coverage token, not OIDC
-  - Private/internal GitHub repos: use OIDC, not a coverage token
-  - Check visibility with: `gh repo view --json visibility`
+- **Authentication method** (in order of preference):
+  1. **OIDC** (best option when supported — no secrets to manage)
+  2. **Workspace-level coverage token** (covers all projects in the workspace — easier to manage). Found in the Qlty UI at: `https://qlty.sh/gh/<org>/settings/coverage`
+  3. **Project-level coverage token** (scoped to a single project). Found in the Qlty UI at: `https://qlty.sh/gh/<org>/projects/<repo>/settings/coverage/reports`
 - **Which test suites to include?**
   - Include all unit test suites (most important for line coverage)
   - Include integration test suites only if they provide significant additional coverage value
-  - Exclude end-to-end (E2E) test suites (lower code coverage value)
+  - Include end-to-end (E2E) test suites if they generate code coverage data
 - **Coverage merging or tags?**
   - If only one test suite: no merging or tags needed
   - If multiple test suites: choose between server-side coverage merging and coverage tags:
@@ -157,4 +157,4 @@ When done, report:
 6. Next steps for the user:
    - Confirm the uploaded report appears on the coverage reports page above
    - After merging the PR to the default branch, verify coverage shows on the project's Overview page
-   - Optionally, enable coverage commit status checks in the project's Gate settings to enforce coverage thresholds on PRs
+   - Optionally, enable coverage commit status checks in the project's Review Config settings (`https://qlty.sh/gh/<org>/projects/<repo>/settings/review`) to enforce coverage thresholds on PRs
