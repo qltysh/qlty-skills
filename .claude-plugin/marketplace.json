@@ -1,0 +1,14 @@
+{
+  "name": "qlty",
+  "owner": {
+    "name": "Qlty",
+    "url": "https://qlty.sh"
+  },
+  "plugins": [
+    {
+      "name": "qlty-skills",
+      "source": ".",
+      "description": "Skills and prompts for AI coding tools to set up and manage Qlty workflows"
+    }
+  ]
+}

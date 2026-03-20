@@ -1,0 +1,9 @@
+{
+  "name": "qlty-skills",
+  "description": "Skills and prompts for AI coding tools to set up and manage Qlty workflows",
+  "version": "1.0.0",
+  "author": {
+    "name": "Qlty",
+    "url": "https://qlty.sh"
+  }
+}
