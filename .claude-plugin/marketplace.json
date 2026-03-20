@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "qlty-skills",
-      "source": ".",
+      "source": "./",
       "description": "Skills and prompts for AI coding tools to set up and manage Qlty workflows"
     }
   ]
