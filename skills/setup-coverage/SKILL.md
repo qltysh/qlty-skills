@@ -64,8 +64,12 @@ If the project is NOT generating coverage data yet, then add the minimal configu
 
 - **Authentication method** (in order of preference):
   1. **OIDC** (best option when supported — no secrets to manage)
-  2. **Workspace-level coverage token** (covers all projects in the workspace — easier to manage). Found in the Qlty UI at: `https://qlty.sh/gh/<org>/settings/coverage`
-  3. **Project-level coverage token** (scoped to a single project). Found in the Qlty UI at: `https://qlty.sh/gh/<org>/projects/<repo>/settings/coverage/reports`
+  2. **Workspace-level coverage token** (best option for public repos — one token covers all projects in the workspace, easier to set up and manage than project-level tokens). Found in the Qlty UI at: `https://qlty.sh/gh/<org>/settings/coverage`
+  3. **Project-level coverage token** (scoped to a single project — use only if workspace-level is not available). Found in the Qlty UI at: `https://qlty.sh/gh/<org>/projects/<repo>/settings/coverage/reports`
+  - Public GitHub repos: use a coverage token (workspace-level preferred), not OIDC
+  - Private/internal GitHub repos: use OIDC, not a coverage token
+  - Check visibility with: `gh repo view --json visibility`
+  - When recommending a token to the user, always explicitly state whether to use a workspace-level or project-level token and explain the difference
 - **Which test suites to include?**
   - Include all unit test suites (most important for line coverage)
   - Include integration test suites only if they provide significant additional coverage value
