@@ -5,7 +5,9 @@
       "id": 1,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/httpx. When creating the PR, use: gh pr create --repo laura-mlg/httpx --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a Python project using ruff. Detects existing pyproject.toml with ruff config. Enables ruff, trufflehog, markdownlint, yamllint, actionlint. Asks user about modes and smells before committing.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/httpx",
         "PR branch is qlty-setup",
@@ -23,7 +25,9 @@
       "id": 2,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/requests. When creating the PR, use: gh pr create --repo laura-mlg/requests --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a Python project. Enables ruff (or flake8 if no ruff config found), bandit for security, trufflehog, osv-scanner for dependencies. Asks the user about security plugin modes.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/requests",
         ".qlty/qlty.toml is committed in the PR",
@@ -39,7 +43,9 @@
       "id": 3,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/zod. When creating the PR, use: gh pr create --repo laura-mlg/zod --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a TypeScript project. Detects existing ESLint config and references it via config_files. Enables eslint, tsc, prettier, markdownlint, trufflehog. Asks about extra_packages needed for the ESLint setup.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/zod",
         ".qlty/qlty.toml is committed in the PR",
@@ -57,7 +63,9 @@
       "id": 4,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/shoelace. When creating the PR, use: gh pr create --repo laura-mlg/shoelace --head qlty-setup --base next",
       "expected_output": "PR created with .qlty/qlty.toml for a TypeScript + CSS web components project. Enables eslint, stylelint (for CSS/SCSS), prettier, trufflehog. If stylelint config is found, references it via config_files. Proposes extra_packages for any stylelint extends detected.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/shoelace",
         "PR base branch is next (not main)",
@@ -74,7 +82,9 @@
       "id": 5,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/got. When creating the PR, use: gh pr create --repo laura-mlg/got --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a TypeScript/JavaScript project with minimal existing linter setup. Enables eslint, prettier, markdownlint, trufflehog, actionlint. Runs qlty init if .qlty/ does not exist. Interactively asks about smells and modes.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/got",
         ".qlty/qlty.toml is committed in the PR",
@@ -91,7 +101,9 @@
       "id": 6,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/puma. When creating the PR, use: gh pr create --repo laura-mlg/puma --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a Ruby project. Detects existing .rubocop.yml and references it. Enables rubocop, trufflehog, markdownlint, yamllint. Does not enable standardrb (rubocop config present). Discusses smells for Ruby.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/puma",
         ".qlty/qlty.toml is committed in the PR",
@@ -99,7 +111,7 @@
         "Skill detected the existing .rubocop.yml and referenced it via config_files",
         "trufflehog is enabled and set to block",
         "markdownlint is enabled",
-        "Did NOT enable standardrb (rubocop already present — avoid double-linting)",
+        "Did NOT enable standardrb (rubocop already present \u2014 avoid double-linting)",
         "Did not enable brakeman (puma is not a Rails app)",
         "Did not create .qlty/qlty.toml in the upstream puma/puma repo"
       ]
@@ -108,7 +120,9 @@
       "id": 7,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/cobra. When creating the PR, use: gh pr create --repo laura-mlg/cobra --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a Go CLI library. Enables gofmt or golangci-lint, trufflehog, markdownlint, actionlint, yamllint. Checks for .golangci.yml config. Asks about osv-scanner for dependency scanning.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/cobra",
         ".qlty/qlty.toml is committed in the PR",
@@ -124,7 +138,9 @@
       "id": 8,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/spring-petclinic. When creating the PR, use: gh pr create --repo laura-mlg/spring-petclinic --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a Java Spring Boot project. Enables google-java-format, pmd, trufflehog, markdownlint, actionlint, checkov. Discusses radarlint-java for deep quality analysis. Asks about Maven build exclusions.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/spring-petclinic",
         ".qlty/qlty.toml is committed in the PR",
@@ -140,7 +156,9 @@
       "id": 9,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/timber. When creating the PR, use: gh pr create --repo laura-mlg/timber --head qlty-setup --base trunk",
       "expected_output": "PR created with .qlty/qlty.toml for a Kotlin Android library. Enables ktlint, trufflehog, markdownlint. Proposes radarlint-kotlin in monitor mode. PR base is trunk.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/timber",
         "PR base branch is trunk (not main or master)",
@@ -156,7 +174,9 @@
       "id": 10,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/pest. When creating the PR, use: gh pr create --repo laura-mlg/pest --head qlty-setup --base 4.x",
       "expected_output": "PR created with .qlty/qlty.toml for a PHP project. Detects phpstan.neon config if present. Enables phpstan, php-codesniffer or php-cs-fixer, trufflehog, markdownlint. PR base branch is 4.x.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/pest",
         "PR base branch is 4.x (not main or master)",
@@ -173,7 +193,9 @@
       "id": 11,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/clap. When creating the PR, use: gh pr create --repo laura-mlg/clap --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a Rust CLI argument parser. Enables clippy, rustfmt, trufflehog, markdownlint. If clippy.toml exists, references it. Asks about osv-scanner for Cargo.lock.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/clap",
         "PR base branch is master",
@@ -191,7 +213,9 @@
       "id": 12,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/Alamofire. When creating the PR, use: gh pr create --repo laura-mlg/Alamofire --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a Swift iOS/macOS networking library. Enables swiftlint, swiftformat (if .swiftformat present), trufflehog. If .swiftlint.yml exists, references it via config_files.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/Alamofire",
         "PR base branch is master",
@@ -208,7 +232,9 @@
       "id": 13,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/fzf. When creating the PR, use: gh pr create --repo laura-mlg/fzf --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a Go project with significant shell scripts. Enables gofmt, shellcheck, shfmt (shell scripts present), trufflehog, markdownlint. Detects both Go and shell file presence.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/fzf",
         "PR base branch is master",
@@ -225,7 +251,9 @@
       "id": 14,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/lazydocker. When creating the PR, use: gh pr create --repo laura-mlg/lazydocker --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a Go project with Docker configuration. Enables gofmt or golangci-lint, hadolint (Dockerfiles present), checkov for Docker security, trivy, trufflehog, markdownlint.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/lazydocker",
         "PR base branch is master",
@@ -242,7 +270,9 @@
       "id": 15,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/terraform-aws-vpc. When creating the PR, use: gh pr create --repo laura-mlg/terraform-aws-vpc --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a pure Terraform module. Enables terraform (format), tflint (lint), checkov (security), trufflehog, markdownlint. If .tflint.hcl is found, references it. Security plugins are foregrounded.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/terraform-aws-vpc",
         "PR base branch is master",
@@ -253,7 +283,7 @@
         "trufflehog is enabled and set to block",
         "trivy is enabled or mentioned for IaC scanning",
         "markdownlint is enabled",
-        "Security plugins (checkov, trivy) are discussed with the user — mode should be monitor initially given potential noise on Terraform modules",
+        "Security plugins (checkov, trivy) are discussed with the user \u2014 mode should be monitor initially given potential noise on Terraform modules",
         "Did not create .qlty/qlty.toml in the upstream terraform-aws-modules/terraform-aws-vpc repo"
       ]
     },
@@ -261,7 +291,9 @@
       "id": 16,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/python. When creating the PR, use: gh pr create --repo laura-mlg/python --head qlty-setup --base master",
       "expected_output": "PR created with .qlty/qlty.toml for a Python Kubernetes client with extensive YAML files. Enables ruff or flake8, yamllint, trufflehog, actionlint (many GitHub Actions workflows). Asks about kube-linter for the K8s manifests.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/python",
         "PR base branch is master",
@@ -279,7 +311,9 @@
       "id": 17,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/jaffle-shop-classic. When creating the PR, use: gh pr create --repo laura-mlg/jaffle-shop-classic --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a dbt SQL project. Enables sqlfluff (SQL files present), trufflehog, yamllint (dbt YAML config files). If .sqlfluff config is found, references it. Explains what sqlfluff does.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/jaffle-shop-classic",
         ".qlty/qlty.toml is committed in the PR",
@@ -295,7 +329,9 @@
       "id": 18,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/openapi-backend. When creating the PR, use: gh pr create --repo laura-mlg/openapi-backend --head qlty-setup --base main",
       "expected_output": "PR created with .qlty/qlty.toml for a TypeScript library for OpenAPI. Enables spectral for OpenAPI spec linting, eslint, prettier, trufflehog, markdownlint. If .spectral.yml exists, references it. Asks about extra_packages for any Spectral rulesets.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/openapi-backend",
         ".qlty/qlty.toml is committed in the PR",
@@ -311,8 +347,10 @@
     {
       "id": 19,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/changesets. When creating the PR, use: gh pr create --repo laura-mlg/changesets --head qlty-setup --base main",
-      "expected_output": "PR created with .qlty/qlty.toml for a TypeScript monorepo with multiple packages. Enables eslint, prettier, markdownlint, trufflehog, actionlint. Discusses monorepo configuration — whether to use prefix-scoped plugins or a single config. Asks about package-specific eslint configs.",
-      "files": [".qlty/qlty.toml"],
+      "expected_output": "PR created with .qlty/qlty.toml for a TypeScript monorepo with multiple packages. Enables eslint, prettier, markdownlint, trufflehog, actionlint. Discusses monorepo configuration \u2014 whether to use prefix-scoped plugins or a single config. Asks about package-specific eslint configs.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/changesets",
         ".qlty/qlty.toml is committed in the PR",
@@ -330,7 +368,9 @@
       "id": 20,
       "prompt": "IMPORTANT: This repo is a fork at laura-mlg/cli. When creating the PR, use: gh pr create --repo laura-mlg/cli --head qlty-setup --base trunk",
       "expected_output": "PR created with .qlty/qlty.toml for the GitHub CLI (Go + Docker + GitHub Actions). Enables golangci-lint or gofmt, hadolint (Dockerfiles), actionlint (workflows), zizmor (GitHub Actions security), trufflehog, markdownlint, yamllint. Security plugins are foregrounded given the security-sensitive nature of this tool.",
-      "files": [".qlty/qlty.toml"],
+      "files": [
+        ".qlty/qlty.toml"
+      ],
       "expectations": [
         "Created a PR on laura-mlg/cli",
         "PR base branch is trunk (not main or master)",
@@ -344,6 +384,111 @@
         "yamllint is enabled",
         "Security plugins are discussed with appropriate rigor given this is a security-sensitive CLI tool",
         "Did not create .qlty/qlty.toml in the upstream cli/cli repo"
+      ]
+    },
+    {
+      "id": 21,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-mono. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-mono --head qlty-setup --base main\n\nThis is a fullstack monorepo with three subdirectories: frontend/ (React + TypeScript, has .eslintrc.js and package.json with all @typescript-eslint and react eslint deps already listed in devDependencies), backend/ (Python FastAPI, has pyproject.toml with [tool.ruff] and [tool.mypy]), and infra/ (Terraform). Each subdir has its own language stack. Set up qlty.toml with appropriate prefix scoping. For the frontend eslint plugin, use package_file pointing to frontend/package.json with package_filters rather than duplicating extra_packages. Include tsc for TypeScript type checking (tsconfig.json present in frontend/).",
+      "expected_output": "PR created with .qlty/qlty.toml for a TypeScript+Python+Terraform monorepo. Uses prefix scoping for each subdirectory. Frontend eslint uses package_file with package_filters. Separate ruff and mypy for backend. checkov and tflint for infra.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-mono",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "eslint plugin has prefix = \"frontend\" to scope it to the frontend subdirectory",
+        "eslint plugin uses package_file referencing frontend/package.json (not extra_packages) because devDependencies already has all needed packages",
+        "eslint plugin uses package_filters to limit which packages are installed",
+        "ruff plugin is scoped to the backend/ subdirectory via prefix or [[exclude]]",
+        "tflint or checkov is scoped to the infra/ subdirectory",
+        "trufflehog is enabled globally (not scoped)",
+        "tsc is included for TypeScript type checking",
+        "Security plugins (trufflehog, osv-scanner or trivy) are set to block mode"
+      ]
+    },
+    {
+      "id": 22,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-data-science. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-data-science --head qlty-setup --base main\n\nThis is a Python data science repo. The code has functions with 6-8 parameters (train_model, preprocess_features, evaluate_model) which is normal for ML pipelines, and has three structurally identical summarize_*_data functions (train/test/validation) which is an intentional pattern for separate dataset stats. Set up qlty.toml with smells configuration appropriate for data science code: raise function_parameters threshold, adjust function_complexity, and handle the intentional duplication.",
+      "expected_output": "PR created with .qlty/qlty.toml for a Python data science project. Smells section includes raised thresholds appropriate for ML code. Uses language.python.smells overrides or global threshold adjustments. Either disables identical_code or raises duplication threshold.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-data-science",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "ruff is enabled (Python project with pyproject.toml [tool.ruff])",
+        "trufflehog is enabled and set to block mode",
+        "smells section is present",
+        "function_parameters threshold is raised above the default of 4 (either via [language.python.smells] or [smells.function_parameters]) to accommodate ML functions with many params",
+        "Either smells.identical_code.enabled = false OR smells.duplication.nodes_threshold is raised, to account for the intentionally identical summarize_train/test/validation_data functions",
+        "Did NOT enable both ruff and flake8"
+      ]
+    },
+    {
+      "id": 23,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/puma. When creating the PR, use: gh pr create --repo laura-mlg/puma --head qlty-setup-v2 --base main\n\nThis is the Puma Ruby web server. It has a Gemfile that already declares rubocop and rubocop-performance gems. It also has .rubocop.yml and .rubocop_todo.yml. Configure qlty.toml to use package_file pointing to the Gemfile (with package_filters) rather than extra_packages, since rubocop extensions are already declared there. Reference both .rubocop.yml and .rubocop_todo.yml in config_files. Add [[triage]] rules to downgrade known-noisy auto-correctable rubocop Style offenses to monitor mode.",
+      "expected_output": "PR created with .qlty/qlty.toml for a Ruby project. Rubocop plugin uses package_file = \"Gemfile\" with package_filters instead of extra_packages. Both .rubocop.yml and .rubocop_todo.yml referenced in config_files. [[triage]] block downgrade noisy rubocop style rules.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/puma",
+        "PR branch is qlty-setup-v2",
+        ".qlty/qlty.toml is committed in the PR",
+        "rubocop plugin is enabled",
+        "rubocop plugin uses package_file = \"Gemfile\" (not extra_packages) since rubocop and rubocop-performance are already in the Gemfile",
+        "rubocop plugin uses package_filters to limit which gems are installed",
+        "rubocop plugin has config_files referencing .rubocop.yml",
+        "At least one [[triage]] block is present to handle noisy rubocop rules (e.g., Style/* rules set to monitor)",
+        "trufflehog is enabled and set to block mode",
+        "markdownlint is enabled (markdown files present)",
+        "Did NOT use extra_packages for rubocop extensions since Gemfile already declares them"
+      ]
+    },
+    {
+      "id": 24,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/spring-petclinic. When creating the PR, use: gh pr create --repo laura-mlg/spring-petclinic --head qlty-setup-v2 --base main\n\nThis is a Java Spring Boot application. It uses checkstyle (via Maven plugin in pom.xml). It also has docker-compose.yml and k8s/ directory with Kubernetes manifests. Set up qlty.toml with: google-java-format and pmd for Java code quality; checkov for the Docker and K8s files; kube-linter for the k8s/ manifests; smells with per-language Java overrides (Java enterprise code typically needs higher complexity thresholds); and [[triage]] rules to handle known-noisy pmd findings.",
+      "expected_output": "PR created with .qlty/qlty.toml for a Java Spring Boot project. Includes google-java-format, pmd, checkov for Docker/K8s, kube-linter. Java smells thresholds adjusted. [[triage]] present for noisy pmd rules.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/spring-petclinic",
+        "PR branch is qlty-setup-v2",
+        ".qlty/qlty.toml is committed in the PR",
+        "google-java-format is enabled for Java formatting",
+        "pmd is enabled for Java static analysis",
+        "checkov is enabled (docker-compose.yml and k8s manifests present) and set to block mode",
+        "kube-linter is enabled (k8s/ directory with Kubernetes manifests present)",
+        "trufflehog is enabled and set to block mode",
+        "smells section is present with Java-appropriate threshold adjustments (function_complexity > 15 or language.java.smells override)",
+        "At least one [[triage]] block is present (e.g., to downgrade noisy pmd rules to monitor)",
+        "yamllint is enabled (YAML files present including docker-compose.yml and k8s manifests)"
+      ]
+    },
+    {
+      "id": 25,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/terraform-aws-vpc. When creating the PR, use: gh pr create --repo laura-mlg/terraform-aws-vpc --head qlty-setup-v2 --base master\n\nThis is a Terraform module for AWS VPC. It has GitHub Actions workflows. It uses tflint in its pre-commit config. Set up qlty.toml with: terraform for formatting; tflint for linting; trivy with both config and vuln drivers (IaC scanning + vulnerability scanning); checkov for IaC security, with affects_cache to ensure re-analysis when the Terraform files change; [[triage]] to handle known AWS-specific IaC findings that are intentional patterns in a reusable module; and actionlint + yamllint for the GitHub Actions workflows.",
+      "expected_output": "PR created with .qlty/qlty.toml for a Terraform module. trivy uses drivers = [\"config\", \"vuln\"]. checkov has affects_cache. [[triage]] handles AWS module patterns. actionlint and yamllint enabled.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/terraform-aws-vpc",
+        "PR branch is qlty-setup-v2",
+        ".qlty/qlty.toml is committed in the PR",
+        "terraform plugin is enabled for formatting",
+        "tflint plugin is enabled",
+        "trivy plugin is enabled with drivers that include \"config\" for IaC scanning",
+        "trivy drivers list does NOT include \"fs-vuln\" (invalid value)",
+        "checkov plugin is enabled and set to block mode",
+        "checkov plugin has affects_cache listing relevant Terraform config files",
+        "At least one [[triage]] block is present for IaC findings",
+        "actionlint is enabled (GitHub Actions workflows present)",
+        "yamllint is enabled (YAML files present)",
+        "trufflehog is enabled and set to block mode"
       ]
     }
   ]
