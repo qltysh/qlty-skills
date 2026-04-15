@@ -216,6 +216,8 @@ For each npm-based plugin, read the existing config file to identify all `extend
 
 **Version pinning:** Use versions already pinned in `package.json` devDependencies wherever possible. Fall back to the latest stable version only if the package is not already in devDependencies.
 
+**`@typescript-eslint` version cap:** The scoped packages `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin` only exist up to v6.x. In v7+, the project was rebranded to the unscoped `typescript-eslint` package. Always pin to v5.x or v6.x for the scoped packages (e.g., `@typescript-eslint/parser@5.62.0` or `6.x`). Do NOT use v7+ for the `@typescript-eslint/` scoped packages.
+
 **IMPORTANT: Always use `config_files = ["path"]` when referencing a plugin's config file. Never use `config = "path"` — that is not a valid TOML field.**
 
 **Config file references** — if a standalone config file exists, add `config_files`:
@@ -272,6 +274,8 @@ name = "tsc"
 skip_upstream = true
 ```
 
+**Warning on `tsc` plugin:** Only enable `tsc` if the project already passes `tsc --noEmit` in CI. On complex real-world TypeScript repos where compilation status is uncertain, `tsc` causes "Build errored" in Qlty Cloud even with `skip_upstream = true`. When in doubt, skip `tsc` and rely on `eslint` with `@typescript-eslint` for TypeScript linting. Also: `xo`-based projects (those with `"xo"` in devDependencies) use xo as a CLI linter wrapping eslint — do NOT add the eslint plugin for xo projects, as xo bundles its own eslint internals.
+
 **`.qlty/configs/` directory** — If you want to store a plugin's config file inside the `.qlty/` directory (to keep it out of the repo root), Qlty will automatically provision it during analysis. Reference it with a relative path in `config_files`:
 
 ```toml
@@ -279,6 +283,8 @@ skip_upstream = true
 name = "rubocop"
 config_files = [".qlty/configs/.rubocop.yml"]
 ```
+
+**Warning for ESM projects:** If the project has `"type": "module"` in `package.json`, a `.eslintrc.js` stored in `.qlty/configs/` will fail because Node treats `.js` as ESM but the config uses `module.exports` (CommonJS). Use `.eslintrc.cjs` (explicit CJS extension) instead: `config_files = [".qlty/configs/.eslintrc.cjs"]`.
 
 Show each proposed entry and explain why. Ask the user to confirm or adjust package versions.
 
@@ -440,10 +446,10 @@ set.mode = "monitor"
 - `file_patterns = ["glob"]` — match by file path
 
 **Set values** (what to change when matched):
-- `set.mode` — override to `"block"`, `"comment"`, `"monitor"`, or `"disabled"`
+- `set.mode` — override to `"block"`, `"comment"`, `"monitor"`, or `"disabled"` ← **prefer this for suppression**
 - `set.level` — override to `"error"`, `"warning"`, or `"note"`
-- `set.ignored = true` — suppress entirely
-- `set.category` — recategorize the finding
+- `set.ignored = true` — suppress entirely (use `set.mode = "disabled"` as a safer alternative; `set.ignored` behavior may not be consistent across Qlty versions)
+- `set.category` — recategorize the finding (**use with caution** — may cause "Build errored" in Qlty Cloud; avoid until confirmed supported)
 
 Ask: "Are there specific rules from any plugin that are too noisy, need to be promoted to blocking, or should be silenced in certain paths? If so, we can add `[[triage]]` blocks to handle them without touching the plugin's overall mode."
 

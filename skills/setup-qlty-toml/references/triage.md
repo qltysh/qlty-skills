@@ -17,10 +17,10 @@ Source: https://docs.qlty.sh/qlty-toml
 
 | Field | Values | Description |
 |---|---|---|
-| `set.mode` | `"block"\|"comment"\|"monitor"\|"disabled"` | Override the issue's effective mode |
+| `set.mode` | `"block"\|"comment"\|"monitor"\|"disabled"` | Override the issue's effective mode — **preferred for suppression** |
 | `set.level` | `"error"\|"warning"\|"note"` | Override the issue's severity level |
-| `set.ignored` | `true` | Suppress the issue entirely |
-| `set.category` | string | Recategorize the finding |
+| `set.ignored` | `true` | Suppress entirely — use `set.mode = "disabled"` as a safer alternative; `set.ignored` behavior may not be consistent across Qlty versions |
+| `set.category` | string | Recategorize the finding — **use with caution**, may cause "Build errored" in Qlty Cloud; avoid until confirmed supported in target environment |
 
 ## Common Patterns
 
