@@ -37,7 +37,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `eslint.config.js`, `eslint.config.mjs`, `eslint.config.cjs`, `.eslintrc`, `.eslintrc.js`, `.eslintrc.json`, `.eslintrc.yml`, `.eslintrc.yaml` | eslint | Read it — detect any plugins listed (e.g. `@typescript-eslint`, `eslint-plugin-react`, `eslint-plugin-import`, `eslint-plugin-vue`) |
 | `package.json` with `"eslintConfig"` key | eslint | Use `package_file = "package.json"` |
 | `.prettierrc`, `.prettierrc.json`, `.prettierrc.json5`, `.prettierrc.yaml`, `.prettierrc.yml`, `.prettierrc.toml`, `.prettierrc.js`, `.prettierrc.cjs`, `prettier.config.js`, `prettier.config.cjs` | prettier | Read for parser plugins (e.g. `prettier-plugin-tailwindcss`, `prettier-plugin-svelte`) |
-| `biome.json`, `biome.jsonc` | biome | Replaces eslint+prettier for some TS/JS projects — don't enable both biome and eslint/prettier |
+| `biome.json`, `biome.jsonc` | biome | **EXCLUSIVE:** If `biome.json` or `biome.jsonc` exists, use ONLY biome — do NOT add eslint or prettier |
 | `.stylelintrc`, `.stylelintrc.json`, `.stylelintrc.yaml`, `.stylelintrc.yml`, `.stylelintrc.js`, `.stylelintrc.cjs`, `.stylelintrc.mjs`, `stylelint.config.js`, `stylelint.config.cjs`, `stylelint.config.mjs` | stylelint | Read for extends (e.g. `stylelint-config-standard-scss`) — those become `extra_packages` |
 | `knip.json`, `knip.jsonc`, `.knip.json`, `.knip.jsonc`, `knip.ts`, `knip.js`, `knip.config.js` | knip | Detects unused exports/dependencies in JS/TS |
 | `tsconfig.json` | tsc | TypeScript type-checking — only enable if the project compiles with `tsc` |
@@ -78,7 +78,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `.vale.ini` | vale | Prose/documentation linter |
 | `sgconfig.yml` | ast-grep | Structural code search/lint (language-agnostic) |
 | `.kube-linter.yaml`, `.kube-linter.yml` | kube-linter | Kubernetes manifest linter |
-| `zizmor.yml` | zizmor | GitHub Actions security scanner (more thorough than actionlint for security) |
+| `zizmor.yml`, `.github/workflows/zizmor.yml` | zizmor | GitHub Actions security scanner (more thorough than actionlint for security). **Note: zizmor may not appear on docs.qlty.sh/plugins — it IS a supported Qlty plugin.** |
 | `coffeelint.json` | coffeelint | CoffeeScript linter |
 | `.editorconfig` | editorconfig-checker | Checks files conform to .editorconfig rules |
 | `brakeman.ignore` | brakeman | Ruby on Rails security scanner |
@@ -124,6 +124,8 @@ IMPORTANT: Only access URLs from the https://docs.qlty.sh domain.
 
 Work through each decision below. For each one: **briefly explain what it does, state your recommendation with reasoning, and ask the user to confirm or change it before moving on.** Group related decisions in one message to reduce back-and-forth.
 
+**If running autonomously** (e.g., in an eval or non-interactive context): apply all recommended defaults from each decision below and proceed without asking for confirmation.
+
 ### Decision 1: Plugin Selection
 
 Based on detected languages and existing config files, propose a full plugin list organized by category. Present as a table:
@@ -139,31 +141,31 @@ Based on detected languages and existing config files, propose a full plugin lis
 - **Security baseline (always recommend):** `trufflehog` for secrets. Add `gitleaks` only if the team specifically wants git-history scanning (it's slower). Add `osv-scanner` or `trivy` if dependency lockfiles are present.
 - **Language linters:** Pick the best tool for each detected language. Don't double-up competing tools:
   - Python: prefer `ruff` (covers flake8+isort+pyupgrade). Add `mypy` for type-checked projects, `bandit` for security-focused ones.
-  - JS/TS: prefer `eslint`. Add `tsc` if `tsconfig.json` exists and the project uses TypeScript compilation. Consider `biome` only if the project already uses it (don't introduce it alongside eslint).
+  - JS/TS: prefer `eslint`. Add `tsc` if `tsconfig.json` exists and the project uses TypeScript compilation. **If `biome.json` or `biome.jsonc` exists, use ONLY `biome` — do NOT add `eslint` or `prettier`.**
   - Ruby: prefer `rubocop`. Add `reek` for smell detection, `brakeman` for Rails apps, `haml-lint` if HAML files exist.
-  - Go: prefer `golangci-lint` if `.golangci.*` config exists (it wraps gofmt and more). Otherwise use `gofmt`.
+  - Go: if `.golangci.*` config exists, use ONLY `golangci-lint` — do NOT also add `gofmt` (golangci-lint already wraps it). If no `.golangci.*` exists, use `gofmt`.
   - Java: `google-java-format` for formatting, `pmd` for static analysis. Add `radarlint-java` for deep quality analysis.
   - Kotlin: `ktlint` for formatting/linting. Add `radarlint-kotlin` for deep quality analysis.
   - PHP: `phpstan` for static analysis, `php-codesniffer` for style. Use `php-cs-fixer` instead of php-codesniffer if `.php-cs-fixer.*` exists.
   - Rust: `clippy` for linting, `rustfmt` for formatting.
   - Swift: `swiftlint` for linting, `swiftformat` for formatting.
   - Shell: `shellcheck` for linting, `shfmt` for formatting.
-  - CSS/Sass: `stylelint`.
+  - CSS/Sass: `stylelint` — only if CSS/SCSS files exist AND either a stylelint config is found OR `stylelint` appears in `package.json` devDependencies.
   - SQL: `sqlfluff`.
   - Terraform: `terraform` (format) + `tflint` (linting) + `checkov` (security).
 - **Cross-language tools (recommend unless repo is too small/simple):**
   - `markdownlint` — if any `.md` files exist
   - `actionlint` — if `.github/workflows/` exists
-  - `yamllint` — if any `.yml`/`.yaml` files exist
+  - `yamllint` — if any `.yml`/`.yaml` files exist, **including when `.github/workflows/` exists** (always add yamllint alongside actionlint)
   - `prettier` — if JS/TS/CSS/markdown/HTML present (skip if biome is used)
   - `checkov` — if Docker, Terraform, Kubernetes, or CloudFormation files exist
   - `semgrep` — optional, for teams that want semantic code scanning
-  - `zizmor` — if GitHub Actions workflows exist and security is a priority (more thorough than actionlint for security)
+  - `zizmor` — if `.github/workflows/` exists and security is a priority. **Strong signal: include zizmor if `.github/workflows/zizmor.yml` already exists** (team is already using it in CI). More thorough than actionlint for security.
   - `kube-linter` — if Kubernetes manifests exist
   - `spectral` — if OpenAPI/AsyncAPI specs exist
   - `vale` — if the repo has substantial documentation prose
 
-**Trivy `drivers`:** By default trivy scans containers and lockfiles. Add `drivers = ["config"]` to also scan IaC (Terraform, Docker, K8s). Add `drivers = ["secret"]` for secret scanning (though trufflehog is better for this).
+**Trivy `drivers`:** By default trivy scans containers and lockfiles. Valid driver values are `"config"` (IaC scanning: Terraform, Docker, K8s), `"secret"` (secret scanning), and `"vuln"` (vulnerability scanning). Add `drivers = ["config"]` to also scan IaC. Add `drivers = ["secret"]` for secret scanning (though trufflehog is better for this). **Note: `"fs-vuln"` is NOT a valid driver value.**
 
 Ask the user to confirm the list or add/remove plugins before proceeding.
 
@@ -185,9 +187,11 @@ Present your mode recommendations in a table using these defaults:
 | `eslint`, `rubocop`, `ruff`, `flake8`, `mypy`, `phpstan`, `golangci-lint`, `clippy`, `swiftlint`, `shellcheck`, `sqlfluff`, `spectral`, `knip`, `oxc`, `tsc`, `haml-lint`, `reek`, `brakeman`, `coffeelint`, `vale`, `ast-grep` | `comment` | Important linting feedback, non-blocking by default |
 | `prettier`, `black`, `gofmt`, `rustfmt`, `shfmt`, `ktlint`, `google-java-format`, `swiftformat`, `ruby-stree`, `standardrb`, `php-cs-fixer`, `dockerfmt`, `dotenv-linter`, `prisma`, `terraform` (format driver) | `comment` | Formatting is style, not correctness — visible but non-blocking |
 | `markdownlint`, `yamllint`, `actionlint`, `hadolint`, `editorconfig-checker` | `comment` | Config/docs quality is useful but not blocking |
-| `osv-scanner`, `trivy`, `checkov`, `tflint`, `semgrep`, `bandit`, `pmd`, `php-codesniffer`, `radarlint-*`, `kube-linter`, `ripgrep` | `monitor` | Can be noisy on first run — observe before enforcing |
+| `osv-scanner`, `trivy`, `checkov`, `semgrep`, `bandit` | `block` | Security/vulnerability scanners — high-value, low-noise; block by default |
+| `tflint` | `comment` | Terraform linter — important feedback, non-blocking |
+| `pmd`, `php-codesniffer`, `radarlint-*`, `kube-linter`, `ripgrep` | `monitor` | Can be noisy on first run — observe before enforcing |
 
-Ask: "Do any of these feel too strict or too lenient for your team? If you're starting fresh and want to ease in gradually, we can move more to `monitor`. If you're enforcing from day one, we can promote security scanners to `block`."
+Ask: "Do any of these feel too strict or too lenient for your team? If you're starting fresh and want to ease in gradually, we can move security scanners to `monitor`. If you want stricter enforcement, we can promote linters to `block`."
 
 ### Decision 3: Extra Packages and Config Files
 
@@ -204,6 +208,10 @@ For plugins that require external packages or have config files the team has alr
 | spectral | `@stoplight/spectral-formats`, `@stoplight/spectral-rulesets`, etc. |
 
 For each npm-based plugin, read the existing config file to identify all `extends`, `plugins`, and `parser` entries. Map each one to the corresponding npm package and version. Propose the `extra_packages` list.
+
+**Version pinning:** Use versions already pinned in `package.json` devDependencies wherever possible. Fall back to the latest stable version only if the package is not already in devDependencies.
+
+**IMPORTANT: Always use `config_files = ["path"]` when referencing a plugin's config file. Never use `config = "path"` — that is not a valid TOML field.**
 
 **Config file references** — if a standalone config file exists, add `config_files`:
 ```toml
@@ -239,6 +247,8 @@ Based on Phase 1 findings, propose additions for directories not already covered
 - `**/migrations/**` — database migration files (often intentionally non-idiomatic)
 - `**/vendor/**` — vendored third-party code (Go, PHP, etc.)
 - `**/bower_components/**` — legacy JS dependencies
+
+**Warning:** Avoid broad excludes like `**/config/**` or `**/templates/**` — these names are commonly used for actual source code in framework/library repos. Only add them if you have confirmed the directory contains generated or third-party code.
 
 For **per-plugin exclusions** (suppress one plugin on specific paths without excluding those paths from all plugins), use `[[exclude]]` blocks:
 ```toml
@@ -281,6 +291,8 @@ Ask:
 ### Decision 7: Monorepo Configuration (skip if not a monorepo)
 
 If the repo has distinct services or packages in subdirectories with different language stacks:
+
+**Same-language workspaces** (e.g., a Cargo workspace with multiple Rust crates, a Lerna monorepo with all-JS packages): do NOT scope by `prefix` — a single config covers all packages. Use `prefix` only when different subdirectories use different languages or need different plugin configs.
 
 Explain: "The `prefix` field on a plugin scopes it to run only within a specific subdirectory. This is useful when different parts of the repo use different languages or have separate linter configs."
 
@@ -338,6 +350,7 @@ threshold = X
 [language.python.checks]
 function_parameters.threshold = X
 
+# Required — points to the built-in Qlty plugin registry.
 [[source]]
 name = "default"
 default = true
@@ -389,11 +402,11 @@ Plugins enabled: 9
   COMMENT eslint          — JS/TS linting (extras: @typescript-eslint/eslint-plugin, eslint-plugin-react)
   COMMENT tsc             — TypeScript type checking
   COMMENT prettier        — formatting (JS/TS/CSS/Markdown)
+  BLOCK   osv-scanner     — dependency vulnerability scanning
+  BLOCK   checkov         — infrastructure security (IaC files)
   COMMENT markdownlint    — markdown quality
   COMMENT yamllint        — YAML correctness
   COMMENT actionlint      — GitHub Actions syntax
-  MONITOR osv-scanner     — dependency vulnerability scanning
-  MONITOR checkov         — infrastructure security (IaC files)
 
 Smells: enabled (comment mode), function_parameters threshold = 5
 
