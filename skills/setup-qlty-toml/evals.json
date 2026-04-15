@@ -569,6 +569,188 @@
         "[[triage]] block ignores rubocop Metrics/ParameterLists in test files",
         "Uses [[plugin]] blocks (not [plugins.enabled_plugins.X] format)"
       ]
+    },
+    {
+      "id": 31,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/devise. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/devise --head qlty-setup --base main.\n\ndevise is a Ruby on Rails authentication gem with a dummy Rails app in spec/test_app. The repo has a .reek.yml for code smell configuration. Configure qlty.toml with: rubocop for linting (use Gemfile as package_file with package_filters for rubocop gems); brakeman for Rails security scanning (the dummy app in spec/ makes this a Rails project); reek for Ruby code smell detection using the .reek.yml config. Add [[triage]] to suppress brakeman findings in spec/ test fixtures. Rails-specific: brakeman should be set to block mode as a security scanner.",
+      "expected_output": "PR with qlty.toml enabling rubocop (Gemfile package_file), brakeman (Rails security, block mode), reek (.reek.yml config_files), [[triage]] suppressing brakeman in test directories.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/devise with branch qlty-setup",
+        "rubocop plugin is enabled",
+        "brakeman plugin is enabled and set to block mode (security scanner for Rails)",
+        "reek plugin is enabled with config_files = [\".reek.yml\"]",
+        "At least one [[triage]] block suppresses brakeman findings in spec/ or test/ directories",
+        "trufflehog is enabled and set to block mode",
+        "markdownlint is enabled (markdown files present)",
+        "Did NOT enable standardrb (rubocop already present)"
+      ]
+    },
+    {
+      "id": 32,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/hono. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/hono --head qlty-setup --base main.\n\nhono is a TypeScript web framework. The repo has biome.json (added for this eval), eslint config, and prettier. When biome.json is present, use ONLY biome — do NOT add eslint or prettier. The biome.json covers both linting and formatting. Configure qlty.toml with biome (covering both lint and format), trufflehog, markdownlint, actionlint, yamllint.",
+      "expected_output": "PR with qlty.toml using ONLY biome for JS/TS linting+formatting. No eslint, no prettier. biome is the exclusive JS/TS tool when biome.json is detected.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/hono with branch qlty-setup",
+        "biome plugin is enabled",
+        "eslint plugin is NOT enabled (biome.json present — biome is exclusive)",
+        "prettier plugin is NOT enabled (biome handles formatting)",
+        "trufflehog is enabled and set to block mode",
+        "markdownlint is enabled (markdown files present)",
+        "actionlint is enabled (GitHub Actions workflows present)",
+        "yamllint is enabled"
+      ]
+    },
+    {
+      "id": 33,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/sidekiq. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/sidekiq --head qlty-setup --base main.\n\nsidekiq is a popular Ruby background job library. It has a .rubocop.yml config and rubocop extensions in its Gemfile (rubocop-performance, rubocop-minitest). It also has a .reek.yml added for code smell detection. The team uses rubocop for LINTING ONLY — not as a formatter (they use a separate formatter). To achieve linting-only behavior: use [[triage]] blocks to set all rubocop Style/* and Layout/* rules to monitor mode (treating them as formatting noise, not linting issues). Separate rubocop linting rules (Lint/*, Performance/*, Security/*) should stay at comment mode. Also enable reek for smell detection.",
+      "expected_output": "PR with qlty.toml: rubocop with Gemfile package_file, [[triage]] moving Style/* and Layout/* cop categories to monitor, reek with .reek.yml config_files. Demonstrates rubocop as linter-only via triage.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/sidekiq with branch qlty-setup",
+        "rubocop plugin is enabled",
+        "rubocop plugin uses package_file = \"Gemfile\" or extra_packages listing rubocop extensions",
+        "At least one [[triage]] block targets rubocop Style/* or Layout/* rules and sets mode to monitor (linting-only approach)",
+        "reek plugin is enabled with config_files = [\".reek.yml\"]",
+        "trufflehog is enabled and set to block mode",
+        "markdownlint is enabled"
+      ]
+    },
+    {
+      "id": 34,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/flask. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/flask --head qlty-setup --base main.\n\nflask is a Python web framework. It has pyproject.toml with [tool.ruff] config and a .semgrep.yaml with custom Flask security rules (added for this eval). Configure qlty.toml with: ruff for linting/formatting; bandit for Python security analysis set to block mode; semgrep with config_files = [\".semgrep.yaml\"] to run custom rules; osv-scanner for dependency scanning. Use [[triage]] to suppress specific bandit false-positive rules (e.g., B104 hardcoded binding to all interfaces) that are known noise in a web framework.",
+      "expected_output": "PR with qlty.toml enabling ruff, bandit (block), semgrep (config_files pointing to .semgrep.yaml), osv-scanner. [[triage]] suppresses specific noisy bandit rules.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/flask with branch qlty-setup",
+        "ruff plugin is enabled (Python project with pyproject.toml [tool.ruff])",
+        "bandit plugin is enabled and set to block mode (security-sensitive framework)",
+        "semgrep plugin is enabled with config_files = [\".semgrep.yaml\"]",
+        "osv-scanner or trivy is enabled for dependency scanning",
+        "At least one [[triage]] block suppresses a specific noisy bandit rule to monitor mode",
+        "trufflehog is enabled and set to block mode",
+        "Did NOT enable both ruff and flake8"
+      ]
+    },
+    {
+      "id": 35,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/flysystem. Default branch is 3.x. When creating the PR, use: gh pr create --repo laura-mlg/flysystem --head qlty-setup --base 3.x.\n\nflysystem is a PHP filesystem abstraction library. It has both phpstan.neon AND .php-cs-fixer.dist.php config files. Configure qlty.toml with: php-cs-fixer for formatting (NOT php-codesniffer — .php-cs-fixer.dist.php takes precedence); phpstan for static analysis using config_files = [\"phpstan.neon\"]. phpstan requires phpstan/phpstan-strict-rules as an extra_package (used via phpstan.neon extends). Use [[triage]] to downgrade a phpstan rule about mixed types to monitor mode for this first-time setup.",
+      "expected_output": "PR with qlty.toml: php-cs-fixer (not php-codesniffer), phpstan with config_files + extra_packages for phpstan extensions, [[triage]] for phpstan mixed-type rule.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/flysystem with branch qlty-setup on base 3.x",
+        "php-cs-fixer plugin is enabled for PHP formatting",
+        "php-codesniffer is NOT enabled (.php-cs-fixer.dist.php detected — use php-cs-fixer)",
+        "phpstan plugin is enabled with config_files = [\"phpstan.neon\"]",
+        "phpstan plugin has extra_packages listing at least one phpstan extension (e.g., phpstan/phpstan-strict-rules)",
+        "At least one [[triage]] block targets a phpstan rule",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 36,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/gin. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/gin --head qlty-setup --base master.\n\ngin is a Go web framework with a .golangci.yml that enables 15+ linters (asciicheck, copyloopvar, errorlint, gosec, revive, testifylint, and more). Configure qlty.toml with: golangci-lint (config_files referencing .golangci.yml), version pinned to \"1.59.1\" for stability; osv-scanner for Go module dependency scanning. Use [[triage]] blocks to: downgrade gosec findings to monitor mode (for first-run noise reduction) and promote revive errors to block mode (team enforces revive).",
+      "expected_output": "PR with qlty.toml: golangci-lint with config_files, version pin, [[triage]] downgrading gosec to monitor and promoting revive to block. osv-scanner enabled.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/gin with branch qlty-setup",
+        "golangci-lint plugin is enabled with config_files = [\".golangci.yml\"]",
+        "golangci-lint plugin has version = \"1.59.1\" (or another pinned version)",
+        "gofmt is NOT separately enabled (golangci-lint wraps it)",
+        "osv-scanner or trivy is enabled for dependency scanning",
+        "At least one [[triage]] block downgrading gosec findings (e.g., to monitor)",
+        "At least one [[triage]] block promoting revive findings (e.g., to block or comment)",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 37,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/commons-lang. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/commons-lang --head qlty-setup --base master.\n\napache/commons-lang is a Java utility library with checkstyle configuration in src/conf/checkstyle/. Configure qlty.toml with: google-java-format for formatting; pmd for static analysis (set to monitor initially — noisy on first run); radarlint-java for deep code quality analysis in comment mode. Java-specific smells: enterprise Java typically has higher complexity — set language.java.smells function_complexity threshold to 20 and function_parameters to 6. Use [[triage]] to suppress a specific pmd rule (e.g., UselessParentheses or ExcessiveImports) that is known to be noisy.",
+      "expected_output": "PR with qlty.toml: google-java-format, pmd (monitor), radarlint-java (comment), [language.java.smells] thresholds, [[triage]] for noisy pmd rules.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/commons-lang with branch qlty-setup",
+        "google-java-format plugin is enabled for Java formatting",
+        "pmd plugin is enabled, set to monitor mode (noisy first-run strategy)",
+        "radarlint-java plugin is enabled in comment or monitor mode",
+        "trufflehog is enabled and set to block mode",
+        "[language.java.smells] section is present with function_complexity threshold above 15",
+        "At least one [[triage]] block suppresses a specific noisy pmd rule",
+        "exclude_patterns includes target/ (Maven build output)",
+        "markdownlint is enabled"
+      ]
+    },
+    {
+      "id": 38,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-ts-multi-eslint. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-ts-multi-eslint --head qlty-setup --base main.\n\nThis is a TypeScript npm workspace monorepo with two packages needing SEPARATE eslint configurations:\n- packages/ui/ — React components with its own .eslintrc.js using eslint-plugin-react, eslint-plugin-react-hooks, @typescript-eslint\n- packages/api/ — Node.js API with its own .eslintrc.js using eslint-plugin-import, @typescript-eslint strict type-checking rules\n\nConfigure qlty.toml with TWO separate eslint [[plugin]] blocks: one scoped with prefix=\"packages/ui\" referencing packages/ui/.eslintrc.js and packages/ui/package.json for extra_packages; one scoped with prefix=\"packages/api\" referencing packages/api/.eslintrc.js and packages/api/package.json. Both use @typescript-eslint at v6.x (never v7+). Include trufflehog globally.",
+      "expected_output": "PR with qlty.toml containing two [[plugin]] name=\"eslint\" blocks: one with prefix=packages/ui + config_files + extra_packages for React deps; one with prefix=packages/api + config_files + extra_packages for API deps. Demonstrates per-package eslint scoping.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-ts-multi-eslint with branch qlty-setup",
+        "Two [[plugin]] blocks both with name = \"eslint\" present in qlty.toml",
+        "One eslint block has prefix = \"packages/ui\" (or similar) scoping it to the UI package",
+        "One eslint block has prefix = \"packages/api\" (or similar) scoping it to the API package",
+        "Each eslint block has config_files referencing the respective .eslintrc.js",
+        "extra_packages for UI block includes eslint-plugin-react and @typescript-eslint at v6.x",
+        "extra_packages for API block includes eslint-plugin-import and @typescript-eslint at v6.x",
+        "@typescript-eslint packages are pinned to v6.x (NOT v7+)",
+        "trufflehog is enabled globally (not scoped)"
+      ]
+    },
+    {
+      "id": 39,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/serde. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/serde --head qlty-setup --base master.\n\nserde is a Rust serialization framework structured as a workspace with 5 crates: serde/, serde_core/, serde_derive/, serde_derive_internals/, test_suite/. A single qlty.toml config at the workspace root should cover all crates — do NOT scope by prefix. Configure qlty.toml with: clippy for linting; rustfmt for formatting; osv-scanner for Cargo.lock dependency scanning. Use [[triage]] to: downgrade clippy::complexity lint category findings to monitor mode (too noisy for a mature library); promote clippy::correctness to block mode (correctness issues should always be fixed).",
+      "expected_output": "PR with qlty.toml: clippy + rustfmt at workspace root covering all crates (no prefix). osv-scanner. [[triage]] downgrading clippy complexity to monitor, promoting correctness to block.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/serde with branch qlty-setup",
+        "clippy plugin is enabled (Rust workspace)",
+        "rustfmt plugin is enabled",
+        "No prefix scoping on clippy or rustfmt (single config covers all workspace crates)",
+        "osv-scanner or trivy is enabled for Cargo.lock dependency scanning",
+        "At least one [[triage]] block targets clippy complexity or pedantic lints (downgrade to monitor)",
+        "At least one [[triage]] block promotes clippy correctness findings to block mode",
+        "trufflehog is enabled and set to block mode",
+        "exclude_patterns includes target/ (Rust build output)"
+      ]
+    },
+    {
+      "id": 40,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/mkdocs. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/mkdocs --head qlty-setup --base master.\n\nmkdocs is a Python documentation tool with extensive Markdown documentation in docs/. It has a .vale.ini added for prose quality checking. Configure qlty.toml with: ruff for Python linting (pyproject.toml present with [tool.ruff]); vale for prose quality in docs/ with config_files = [\".vale.ini\"]; markdownlint with config_files if a markdownlint config is found; yamllint (YAML config files present); bandit for Python security. For vale: set mode to monitor initially as prose style rules are team-preference. Use [[triage]] to limit vale to only run on docs/ markdown files (not generated output).",
+      "expected_output": "PR with qlty.toml: ruff, vale (config_files=.vale.ini, monitor mode), markdownlint, yamllint, bandit. [[triage]] or [[exclude]] limiting vale to docs/ only.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/mkdocs with branch qlty-setup",
+        "ruff plugin is enabled (Python project with pyproject.toml [tool.ruff])",
+        "vale plugin is enabled with config_files = [\".vale.ini\"]",
+        "vale is set to monitor mode (prose style is preference-based)",
+        "markdownlint is enabled (extensive markdown docs present)",
+        "yamllint is enabled (YAML config files present)",
+        "bandit is enabled or proposed (Python project, docs tool)",
+        "At least one [[triage]] or [[exclude]] block scopes vale to docs/ directory",
+        "trufflehog is enabled and set to block mode"
+      ]
     }
   ]
 }
