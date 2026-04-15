@@ -242,7 +242,9 @@ package_file = "package.json"
 package_filters = ["eslint"]
 ```
 
-Choose `package_file` when: the project's package manager file already lists all needed plugins and you want versions to stay in sync. Choose `extra_packages` when: the project has no package file, or you need specific versions independent of the project.
+**Warning: `package_filters` is a prefix filter and does NOT match scoped npm packages.** A filter of `"eslint"` will NOT match `@typescript-eslint/parser` or `@typescript-eslint/eslint-plugin` because those package names start with `@`, not `eslint`. If your eslint config requires scoped packages (`@typescript-eslint/*`, `@babel/*`, etc.), use `extra_packages` with explicit versions instead of `package_file` + `package_filters`.
+
+Choose `package_file` when: the project's package manager file already lists all needed plugins and you want versions to stay in sync, AND all needed packages are unscoped (no `@scope/` prefix). Choose `extra_packages` when: the project has no package file, you need specific versions independent of the project, or any required packages are scoped npm packages.
 
 **Note on lock files:** With `package_file`, Qlty respects locked versions. With `package_file` + `package_filters`, lock files are ignored. With `extra_packages`, lock files are not used at all.
 
