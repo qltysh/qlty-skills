@@ -112,9 +112,14 @@ Produce a brief summary of findings, then move on to Phase 2.
 
 Before making decisions, fetch these reference pages so your recommendations are grounded in current docs:
 
-- https://docs.qlty.sh/qlty-toml
-- https://docs.qlty.sh/analysis-configuration
-- https://docs.qlty.sh/plugins
+- https://docs.qlty.sh/qlty-toml — full TOML field reference (plugins, smells, triage, sources)
+- https://docs.qlty.sh/analysis-configuration — maintainability checks and thresholds
+- https://docs.qlty.sh/plugins — supported plugin list and options
+- https://docs.qlty.sh/excluding-files — exclude patterns and per-plugin exclusions
+- https://docs.qlty.sh/silencing-issues — `qlty-ignore` inline comment syntax
+- https://docs.qlty.sh/cli/linter-extensions — `extra_packages` vs `package_file` vs `package_filters`
+
+Also read the local reference files in `references/` (same directory as this SKILL.md) — they contain structured summaries of advanced config patterns you can apply directly.
 
 IMPORTANT: Only access URLs from the https://docs.qlty.sh domain.
 
@@ -228,6 +233,51 @@ extra_packages = ["stylelint-config-standard-scss@13.0.0"]
 
 If the config is embedded in `package.json` (e.g. eslint under `"eslintConfig"`), use `package_file = "package.json"` instead of `config_files`.
 
+**`package_file` + `package_filters`** — When the project's `package.json` (or `Gemfile`, `composer.json`) already declares all needed linter plugins, prefer referencing it over duplicating versions in `extra_packages`. Use `package_filters` to limit which packages get installed from that file:
+
+```toml
+[[plugin]]
+name = "eslint"
+package_file = "package.json"
+package_filters = ["eslint"]
+```
+
+Choose `package_file` when: the project's package manager file already lists all needed plugins and you want versions to stay in sync. Choose `extra_packages` when: the project has no package file, or you need specific versions independent of the project.
+
+**Note on lock files:** With `package_file`, Qlty respects locked versions. With `package_file` + `package_filters`, lock files are ignored. With `extra_packages`, lock files are not used at all.
+
+**`version`** — Pin the tool version (the linter itself, not its extensions). Use when a specific tool version is needed for compatibility with the project's config:
+
+```toml
+[[plugin]]
+name = "golangci-lint"
+version = "1.55.2"
+```
+
+**`affects_cache`** — Additional files whose changes should invalidate the plugin's analysis cache. Use when a plugin reads config from files not automatically detected:
+
+```toml
+[[plugin]]
+name = "eslint"
+affects_cache = [".eslintignore", "tsconfig.json"]
+```
+
+**`skip_upstream`** — Set to `true` to skip analysis of files outside the current diff (upstream dependencies). Useful for TypeScript projects where `tsc` would otherwise type-check all imported files:
+
+```toml
+[[plugin]]
+name = "tsc"
+skip_upstream = true
+```
+
+**`.qlty/configs/` directory** — If you want to store a plugin's config file inside the `.qlty/` directory (to keep it out of the repo root), Qlty will automatically provision it during analysis. Reference it with a relative path in `config_files`:
+
+```toml
+[[plugin]]
+name = "rubocop"
+config_files = [".qlty/configs/.rubocop.yml"]
+```
+
 Show each proposed entry and explain why. Ask the user to confirm or adjust package versions.
 
 ### Decision 4: Exclude Patterns
@@ -283,10 +333,39 @@ Present the configurable smells:
 | `identical_code` | Copy-pasted identical code blocks | enabled |
 | `similar_code` | Structurally similar code blocks | enabled |
 
+**Disabling individual smells** — to turn off a specific check without disabling smells entirely:
+
+```toml
+[smells.identical_code]
+enabled = false
+```
+
+**Duplication fine-tuning** — if the default duplication sensitivity is too aggressive:
+
+```toml
+[smells.duplication]
+nodes_threshold = 100      # higher = less sensitive (default ~45 nodes)
+filter_patterns = ["**/migrations/**", "**/fixtures/**"]  # skip these paths for duplication only
+```
+
+**Per-language overrides** — to set different thresholds for a specific language without affecting others:
+
+```toml
+[language.python.smells]
+function_parameters.threshold = 8    # data science functions often take more params
+
+[language.java.smells]
+function_complexity.threshold = 20   # enterprise Java often has higher complexity
+
+[language.go.smells]
+function_parameters.threshold = 6    # Go error-handling patterns use more params
+```
+
 Ask:
 1. Do you want to enable smells? (Recommended: yes, `mode = "comment"`)
 2. Do any thresholds need adjustment for your codebase? (e.g., lower `function_parameters` to 3 for strict teams, or raise `function_complexity` to 20 for data-heavy code)
-3. Do you want per-language overrides? (e.g., Python is often written with more parameters in data science code)
+3. Are there specific smells to disable entirely? (e.g., `identical_code` for repos with intentional duplication like migrations or fixtures)
+4. Do you want per-language overrides? (e.g., Python data science, Java enterprise, Go error-handling patterns all commonly need higher thresholds)
 
 ### Decision 7: Monorepo Configuration (skip if not a monorepo)
 
@@ -315,6 +394,56 @@ file_patterns = ["backend/**", "infra/**"]
 ```
 
 Ask: "Should any plugins be scoped to specific subdirectories? Do you want to exclude any plugins from running in specific parts of the repo?"
+
+### Decision 8: Triage Rules (advanced — skip if not needed)
+
+`[[triage]]` blocks let you modify how specific issues are reported without changing the entire plugin's mode. They are evaluated in order — first match wins. Use them when:
+
+- A specific rule is too noisy in general, but you don't want to move the whole plugin to `monitor`
+- You want to promote a specific finding from `comment` → `block` without promoting the whole plugin
+- A rule should be silenced only in certain file paths (e.g., ignore `no-console` in test files)
+- You want to recategorize findings (change `level` from warning → error, or adjust `category`)
+
+```toml
+# Downgrade a noisy rubocop style rule to monitor-only
+[[triage]]
+plugins = ["rubocop"]
+rules = ["Style/StringLiterals"]
+set.mode = "monitor"
+
+# Promote a high-severity semgrep finding to block
+[[triage]]
+plugins = ["semgrep"]
+rules = ["python.django.security.injection.sql"]
+set.mode = "block"
+set.level = "error"
+
+# Ignore no-console violations in test files only
+[[triage]]
+plugins = ["eslint"]
+rules = ["no-console"]
+file_patterns = ["**/*.test.*", "**/*.spec.*"]
+set.ignored = true
+
+# Downgrade all pmd findings (noisy for first-time Java setup)
+[[triage]]
+plugins = ["pmd"]
+set.mode = "monitor"
+```
+
+**Match conditions** (all are optional, combined as AND):
+- `plugins = ["name"]` — match by plugin
+- `rules = ["rule-id"]` — match by rule identifier
+- `levels = ["error"]` — match by current issue level
+- `file_patterns = ["glob"]` — match by file path
+
+**Set values** (what to change when matched):
+- `set.mode` — override to `"block"`, `"comment"`, `"monitor"`, or `"disabled"`
+- `set.level` — override to `"error"`, `"warning"`, or `"note"`
+- `set.ignored = true` — suppress entirely
+- `set.category` — recategorize the finding
+
+Ask: "Are there specific rules from any plugin that are too noisy, need to be promoted to blocking, or should be silenced in certain paths? If so, we can add `[[triage]]` blocks to handle them without touching the plugin's overall mode."
 
 ---
 
@@ -347,7 +476,7 @@ mode = "comment"
 threshold = X
 
 # Per-language overrides (only if requested)
-[language.python.checks]
+[language.python.smells]
 function_parameters.threshold = X
 
 # Required — points to the built-in Qlty plugin registry.
@@ -377,7 +506,7 @@ plugins = [...]
 file_patterns = [...]
 ```
 
-Only include sections with non-default values or explicit user decisions. Don't add empty blocks or `[[triage]]` blocks unless requested.
+Only include sections with non-default values or explicit user decisions. Include `[[triage]]` blocks only when Decision 8 identified specific rules to adjust. Don't add empty blocks.
 
 ### 2. Create a branch and open a PR
 
@@ -438,3 +567,41 @@ After the PR merges to the default branch, Qlty Cloud will run its first full an
 - Review `monitor`-mode findings on Qlty Cloud. Once you've triaged the noise, promote any useful plugins to `comment` or `block`.
 - If `qlty check` is not already in CI, add it as a step for pre-merge analysis (runs the same checks locally in CI).
 - Consider setting up the Qlty quality badge for the README.
+
+**5. Inline issue silencing with `qlty-ignore`**
+
+When a specific line or block legitimately triggers a rule (e.g., an intentional pattern, generated code inline, or a known-safe exception), use `qlty-ignore` inline comments rather than widening `exclude_patterns` or adding `[[triage]]` rules. This is a per-occurrence surgical suppression — it does not affect other instances of the same rule.
+
+Single rule, next line:
+```python
+# qlty-ignore: ruff:E501
+long_generated_string = "..."
+```
+
+Multiple rules or tools, comma-separated:
+```typescript
+// qlty-ignore: eslint:no-console, eslint:no-debugger
+console.log("intentional");
+```
+
+Ignore all rules from a tool on the next line:
+```go
+// qlty-ignore: golangci-lint
+someWeirdButCorrectPattern()
+```
+
+Next-line-only (does not apply to indented block beneath it):
+```python
+# qlty-ignore>: bandit:B101
+assert condition  # only this line
+```
+
+Region silencing (start `+`, end `-`):
+```python
+# qlty-ignore+: bandit
+eval(trusted_config_string)
+process(trusted_config_string)
+# qlty-ignore-: bandit
+```
+
+Tell the user: "If you encounter specific false positives after the PR merges, use `qlty-ignore` comments rather than broadening the global config — it keeps suppressions visible and local to the affected code."
