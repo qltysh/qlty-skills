@@ -490,6 +490,86 @@
         "yamllint is enabled (YAML files present)",
         "trufflehog is enabled and set to block mode"
       ]
+    },
+    {
+      "id": 26,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/got. When creating the PR, use: gh pr create --repo laura-mlg/got --head qlty-setup-v2 --base main. Note: got is an ESM project ('type':'module') \u2014 any eslint config stored in .qlty/configs/ must use .eslintrc.cjs (explicit CommonJS) not .eslintrc.js.",
+      "expected_output": "PR created with qlty.toml using skip_upstream=true on tsc, affects_cache=[\"tsconfig.json\"] on eslint, and config stored in .qlty/configs/.eslintrc.cjs. Uses @typescript-eslint extra_packages not package_filters (scoped packages). Security plugins set to block.",
+      "files": [
+        ".qlty/qlty.toml",
+        ".qlty/configs/.eslintrc.cjs"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/got with branch qlty-setup-v2",
+        "tsc plugin has skip_upstream = true",
+        "eslint plugin has affects_cache = [\"tsconfig.json\"]",
+        "Config file stored in .qlty/configs/ and referenced via config_files",
+        "Config file uses .cjs extension (not .js) for ESM project compatibility",
+        "Uses extra_packages with @typescript-eslint (not package_filters with scoped packages)",
+        "Security plugins set to block mode"
+      ]
+    },
+    {
+      "id": 27,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/Alamofire. Default branch is master (not main). When creating the PR, use: gh pr create --repo laura-mlg/Alamofire --head qlty-setup-v2 --base master",
+      "expected_output": "PR created with qlty.toml using version pin on swiftlint, [[triage]] with set.level='warning' downgrading a noisy swiftlint rule, and [[exclude]] block for generated/test files scoped to swiftlint only.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/Alamofire with branch qlty-setup-v2",
+        "swiftlint plugin has version = \"...\" pin",
+        "At least one [[triage]] block with set.level = \"warning\"",
+        "At least one [[exclude]] block scoped to a specific plugin",
+        "Security plugins set to block mode"
+      ]
+    },
+    {
+      "id": 28,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/pest. Default branch is 4.x (not main). When creating the PR, use: gh pr create --repo laura-mlg/pest --head qlty-setup-v2 --base 4.x. Note: pest uses Laravel Pint for formatting (not php-cs-fixer/php-codesniffer) \u2014 skip PHP formatter plugin.",
+      "expected_output": "PR created with qlty.toml using package_file='composer.json' with package_filters for phpstan extensions, [[exclude]] block scoped to phpstan for test fixture directories.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/pest with branch qlty-setup-v2",
+        "phpstan plugin uses package_file or extra_packages for its composer extensions",
+        "[[exclude]] block scoped to phpstan, file_patterns excluding tests/Fixtures",
+        "No php-cs-fixer or php-codesniffer (project uses Laravel Pint)",
+        "Security plugins set to block mode"
+      ]
+    },
+    {
+      "id": 29,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/openapi-backend. When creating the PR, use: gh pr create --repo laura-mlg/openapi-backend --head qlty-setup-v2 --base main. Build on the existing v1 qlty-setup config by adding triage and exclude blocks.",
+      "expected_output": "PR created with qlty.toml adding [[triage]] with set.category='security' on spectral rule, [[exclude]] for generated types from tsc/eslint, [[triage]] with set.ignored=true in test files. Uses @typescript-eslint@5.62.0 (stable, same as v1).",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/openapi-backend with branch qlty-setup-v2",
+        "tsc plugin has skip_upstream = true",
+        "At least one [[triage]] block with set.category",
+        "[[exclude]] block for generated TypeScript types scoped to tsc and/or eslint",
+        "At least one [[triage]] block with set.ignored = true and file_patterns",
+        "Uses @typescript-eslint@5.62.0 (matching v1 which was confirmed working)"
+      ]
+    },
+    {
+      "id": 30,
+      "prompt": "IMPORTANT: This repo is a test repo at laura-mlg/qlty-test-smells. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-smells --head qlty-setup --base main. The repo has intentional duplication: 3 nearly-identical Ruby methods and 3 identical Python functions, each with 7 parameters.",
+      "expected_output": "PR with qlty.toml using smells.duplication.nodes_threshold=12, smells.duplication.filter_patterns for test exclusion, language.ruby.smells.function_parameters.threshold=6, and [[triage]] ignoring Metrics/ParameterLists in test files.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-smells with branch qlty-setup",
+        "[smells.duplication] nodes_threshold set below 25 to catch intentional duplicates",
+        "[smells.duplication] filter_patterns excludes test directories",
+        "[language.ruby.smells] function_parameters.threshold set to catch 7-param methods",
+        "[[triage]] block ignores rubocop Metrics/ParameterLists in test files",
+        "Uses [[plugin]] blocks (not [plugins.enabled_plugins.X] format)"
+      ]
     }
   ]
 }
