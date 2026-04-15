@@ -83,7 +83,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `.editorconfig` | editorconfig-checker | Checks files conform to .editorconfig rules |
 | `brakeman.ignore` | brakeman | Ruby on Rails security scanner |
 | `.pmd/` or `pmd.xml` | pmd | Java/Kotlin static analysis — if using pmd standalone |
-| `radarlint.properties` | radarlint-{java,kotlin,js,python,ruby,php,go} | Deep code quality for respective language |
+| `radarlint.properties` | radarlint-{java,kotlin,js,python,ruby,php,go} | Deep code quality for respective language — **enterprise only**, not in public plugin registry |
 | (no config needed) | google-java-format | Java formatter |
 | (no config needed) | ktlint | Kotlin formatter/linter |
 | (no config needed) | prisma | Prisma schema formatter |
@@ -149,8 +149,8 @@ Based on detected languages and existing config files, propose a full plugin lis
   - JS/TS: prefer `eslint`. Add `tsc` if `tsconfig.json` exists and the project uses TypeScript compilation. **If `biome.json` or `biome.jsonc` exists, use ONLY `biome` — do NOT add `eslint` or `prettier`.**
   - Ruby: prefer `rubocop`. Add `reek` for smell detection, `brakeman` for Rails apps, `haml-lint` if HAML files exist.
   - Go: if `.golangci.*` config exists, use ONLY `golangci-lint` — do NOT also add `gofmt` (golangci-lint already wraps it). If no `.golangci.*` exists, use `gofmt`.
-  - Java: `google-java-format` for formatting, `pmd` for static analysis. Add `radarlint-java` for deep quality analysis.
-  - Kotlin: `ktlint` for formatting/linting. Add `radarlint-kotlin` for deep quality analysis.
+  - Java: `google-java-format` for formatting, `pmd` for static analysis. Add `radarlint-java` for deep quality analysis **(enterprise only — requires separate setup; omit unless user confirms Qlty enterprise access)**.
+  - Kotlin: `ktlint` for formatting/linting. Add `radarlint-kotlin` for deep quality analysis **(enterprise only — requires separate setup; omit unless user confirms Qlty enterprise access)**.
   - PHP: `phpstan` for static analysis, `php-codesniffer` for style. Use `php-cs-fixer` instead of php-codesniffer if `.php-cs-fixer.*` exists.
   - Rust: `clippy` for linting, `rustfmt` for formatting.
   - Swift: `swiftlint` for linting, `swiftformat` for formatting.
@@ -356,6 +356,8 @@ nodes_threshold = 100      # higher = less sensitive (default ~45 nodes)
 filter_patterns = ["**/migrations/**", "**/fixtures/**"]  # skip these paths for duplication only
 ```
 
+**Note:** `min_duplication_lines` is NOT a valid field — use `nodes_threshold`. A "node" in the AST roughly corresponds to 1–3 lines of code, so `nodes_threshold = 100` is roughly equivalent to ~50–100 lines.
+
 **Per-language overrides** — to set different thresholds for a specific language without affecting others:
 
 ```toml
@@ -461,6 +463,14 @@ Once all decisions are confirmed:
 
 ### 1. Write `.qlty/qlty.toml`
 
+**CRITICAL — AVOID THESE COMMON FORMAT ERRORS (all cause "Build errored"):**
+
+- **DO NOT include `[cli]` or `[settings]` sections.** If you ran `qlty init`, its output contains these internal CLI metadata sections — they are NOT valid qlty.toml fields. Strip them out.
+- **DO NOT use the old `[[sources.community]]` format** with `repository =` and `tag =` fields — that is a deprecated source format. Use `[[source]] name = "default" default = true` (see template below).
+- **DO NOT use the old `[plugins.enabled]` / `[[plugins.enabled]]` format** with a separate `[plugins.releases]` version table — that is the deprecated qlty.toml v0 schema. Always use `[[plugin]]` blocks.
+- **DO NOT nest `exclude_patterns` as a section** (`[exclude_patterns] patterns = [...]`). It must be a top-level array: `exclude_patterns = ["..."]`.
+- **The `[[source]]` block is required.** Without it, Qlty cannot resolve plugin definitions and the build will error. Use exactly: `[[source]]` / `name = "default"` / `default = true`. Do NOT set `directory` to a URL — `directory` is for local filesystem paths only.
+
 Apply all confirmed decisions. Structure the file in this order:
 
 ```toml
@@ -487,7 +497,7 @@ threshold = X
 [language.python.smells]
 function_parameters.threshold = X
 
-# Required — points to the built-in Qlty plugin registry.
+# REQUIRED — points to the built-in Qlty plugin registry. Do not omit this block.
 [[source]]
 name = "default"
 default = true
