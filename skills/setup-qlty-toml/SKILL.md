@@ -54,7 +54,6 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `phpcs.xml`, `.phpcs.xml` | php-codesniffer | PHP style — check for custom sniffs in config |
 | `.php-cs-fixer.dist.php`, `.php-cs-fixer.php` | php-cs-fixer | PHP formatter — mutually exclusive with php-codesniffer for formatting |
 | `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | phpstan | PHP static analysis |
-| `psalm.xml`, `psalm.xml.dist` | *(not supported)* | Psalm is NOT in the public Qlty plugin registry — do NOT add a `[[plugin]] name = "psalm"` block, it causes Build errored |
 | `.golangci.yml`, `.golangci.yaml`, `.golangci.json`, `.golangci.toml` | golangci-lint | Go meta-linter — replaces standalone gofmt for many teams |
 | (no config needed) | gofmt | Go formatter — use golangci-lint instead if `.golangci.*` exists |
 | `.clippy.toml`, `clippy.toml` | clippy | Rust linter |
@@ -84,7 +83,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `.editorconfig` | editorconfig-checker | Checks files conform to .editorconfig rules |
 | `brakeman.ignore` | brakeman | Ruby on Rails security scanner |
 | `.pmd/` or `pmd.xml` | pmd | Java/Kotlin static analysis — if using pmd standalone |
-| `radarlint.properties` | radarlint-{java,kotlin,js,python,ruby,php,go} | Deep code quality for respective language — **enterprise only**, not in public plugin registry |
+| `radarlint.properties` | radarlint-{java,kotlin,js,python,ruby,php,go} | Deep code quality — see `references/plugin-registry.md` before adding |
 | (no config needed) | google-java-format | Java formatter |
 | (no config needed) | ktlint | Kotlin formatter/linter |
 | (no config needed) | prisma | Prisma schema formatter |
@@ -142,36 +141,19 @@ Based on detected languages and existing config files, propose a full plugin lis
 | eslint | Linter | TypeScript/JavaScript found | Yes |
 | ... | ... | ... | ... |
 
-**Selection rules:**
+**How to select plugins:**
 
-- **Security baseline (always recommend):** `trufflehog` for secrets. Add `gitleaks` only if the team specifically wants git-history scanning (it's slower). Add `osv-scanner` or `trivy` if dependency lockfiles are present.
-- **Language linters:** Pick the best tool for each detected language. Don't double-up competing tools:
-  - Python: prefer `ruff` (covers flake8+isort+pyupgrade). Add `mypy` for type-checked projects, `bandit` for security-focused ones.
-  - JS/TS: prefer `eslint`. Add `tsc` if `tsconfig.json` exists and the project uses TypeScript compilation. **If `biome.json` or `biome.jsonc` exists, use ONLY `biome` — do NOT add `eslint` or `prettier`.**
-  - Ruby: prefer `rubocop`. Add `reek` for smell detection, `brakeman` for Rails apps, `haml-lint` if HAML files exist.
-  - Go: if `.golangci.*` config exists, use ONLY `golangci-lint` — do NOT also add `gofmt` (golangci-lint already wraps it). If no `.golangci.*` exists, use `gofmt`.
-  - Java: `google-java-format` for formatting, `pmd` for static analysis. Add `radarlint-java` for deep quality analysis **(enterprise only — requires separate setup; omit unless user confirms Qlty enterprise access)**.
-  - Kotlin: `ktlint` for formatting/linting. Add `radarlint-kotlin` for deep quality analysis **(enterprise only — requires separate setup; omit unless user confirms Qlty enterprise access)**.
-  - PHP: `phpstan` for static analysis, `php-codesniffer` for style. Use `php-cs-fixer` instead of php-codesniffer if `.php-cs-fixer.*` exists. **Do NOT add `psalm` — it is NOT in the public Qlty plugin registry and will cause Build errored.**
-  - Rust: `clippy` for linting, `rustfmt` for formatting.
-  - Swift: `swiftlint` for linting, `swiftformat` for formatting.
-  - Shell: `shellcheck` for linting, `shfmt` for formatting.
-  - CSS/Sass: `stylelint` — only if CSS/SCSS files exist AND either a stylelint config is found OR `stylelint` appears in `package.json` devDependencies.
-  - SQL: `sqlfluff`.
-  - Terraform: `terraform` (format) + `tflint` (linting) + `checkov` (security).
-- **Cross-language tools (recommend unless repo is too small/simple):**
-  - `markdownlint` — if any `.md` files exist
-  - `actionlint` — if `.github/workflows/` exists
-  - `yamllint` — if any `.yml`/`.yaml` files exist, **including when `.github/workflows/` exists** (always add yamllint alongside actionlint)
-  - `prettier` — if JS/TS/CSS/markdown/HTML present (skip if biome is used)
-  - `checkov` — if Docker, Terraform, Kubernetes, or CloudFormation files exist
-  - `semgrep` — optional, for teams that want semantic code scanning
-  - `zizmor` — if `.github/workflows/` exists and security is a priority. **Strong signal: include zizmor if `.github/workflows/zizmor.yml` already exists** (team is already using it in CI). More thorough than actionlint for security.
-  - `kube-linter` — if Kubernetes manifests exist
-  - `spectral` — if OpenAPI/AsyncAPI specs exist
-  - `vale` — if the repo has substantial documentation prose
+1. **Verify availability first.** Before including any plugin, confirm it exists in the registry at https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — that directory is the authoritative source. The docs at docs.qlty.sh/plugins may be incomplete or outdated. Also check `references/plugin-registry.md` for notes on plugins with known caveats or registry limitations from past runs.
 
-**Trivy `drivers`:** By default trivy scans containers and lockfiles. Valid driver values are `"config"` (IaC scanning: Terraform, Docker, K8s), `"secret"` (secret scanning), and `"vuln"` (vulnerability scanning). Add `drivers = ["config"]` to also scan IaC. Add `drivers = ["secret"]` for secret scanning (though trufflehog is better for this). **Note: `"fs-vuln"` is NOT a valid driver value.**
+2. **Mutual-exclusion rules** (tool design constraints, not registry facts):
+   - **biome** replaces eslint and prettier — if `biome.json`/`biome.jsonc` present, do NOT also add eslint or prettier.
+   - **standardrb** replaces rubocop — if `.standard.yml` present, use standardrb, not rubocop.
+   - **golangci-lint** replaces gofmt — if `.golangci.*` present, do NOT also add gofmt.
+   - **oxc** coexists with eslint — unlike biome, both can be enabled together.
+
+3. **Security baseline (always recommend):** `trufflehog` for secrets. `osv-scanner` or `trivy` if dependency lockfiles present. `zizmor` if GitHub Actions workflows present (strong signal: `zizmor.yml` already in the repo's CI).
+
+4. **Cross-language tools:** Recommend based on what's in the repo — `markdownlint` (`.md` files), `actionlint` + `yamllint` (`.github/workflows/`), `checkov` (Docker/Terraform/K8s), `kube-linter` (K8s manifests), `spectral` (OpenAPI specs), `vale` (prose docs).
 
 Ask the user to confirm the list or add/remove plugins before proceeding.
 
@@ -275,7 +257,7 @@ name = "tsc"
 skip_upstream = true
 ```
 
-**Warning on `tsc` plugin:** Only enable `tsc` if the project already passes `tsc --noEmit` in CI. On complex real-world TypeScript repos where compilation status is uncertain, `tsc` causes "Build errored" in Qlty Cloud even with `skip_upstream = true`. When in doubt, skip `tsc` and rely on `eslint` with `@typescript-eslint` for TypeScript linting. Also: `xo`-based projects (those with `"xo"` in devDependencies) use xo as a CLI linter wrapping eslint — do NOT add the eslint plugin for xo projects, as xo bundles its own eslint internals.
+**Warning on `tsc` plugin:** Only enable `tsc` if the project already passes `tsc --noEmit` in CI. When in doubt, skip `tsc` and rely on `eslint` with `@typescript-eslint` instead. See `references/plugin-registry.md` for details. Also: `xo`-based projects (those with `"xo"` in devDependencies) use xo as a CLI linter wrapping eslint — do NOT add the eslint plugin for xo projects, as xo bundles its own eslint internals.
 
 **`.qlty/configs/` directory** — If you want to store a plugin's config file inside the `.qlty/` directory (to keep it out of the repo root), Qlty will automatically provision it during analysis. Reference it with a relative path in `config_files`:
 
