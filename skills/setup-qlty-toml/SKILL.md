@@ -110,18 +110,18 @@ Produce a brief summary of findings, then move on to Phase 2.
 
 ## Phase 2: Fetch Documentation
 
-Before making decisions, fetch these reference pages so your recommendations are grounded in current docs:
+Before making decisions, fetch these reference pages so your recommendations are grounded in current data:
 
+- https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — **authoritative plugin list** (browse this to see exactly which plugins exist; each subdirectory is an available plugin name)
 - https://docs.qlty.sh/qlty-toml — full TOML field reference (plugins, smells, triage, sources)
 - https://docs.qlty.sh/analysis-configuration — maintainability checks and thresholds
-- https://docs.qlty.sh/plugins — supported plugin list and options
 - https://docs.qlty.sh/excluding-files — exclude patterns and per-plugin exclusions
 - https://docs.qlty.sh/silencing-issues — `qlty-ignore` inline comment syntax
 - https://docs.qlty.sh/cli/linter-extensions — `extra_packages` vs `package_file` vs `package_filters`
 
-Also read the local reference files in `references/` (same directory as this SKILL.md) — they contain structured summaries of advanced config patterns you can apply directly.
+Also read the local reference files in `references/` (same directory as this SKILL.md) — they contain caveats and config patterns from past runs.
 
-IMPORTANT: Only access URLs from the https://docs.qlty.sh domain.
+**Note on docs.qlty.sh/plugins:** that page may be incomplete — the GitHub directory above is the source of truth for what plugins actually exist.
 
 ---
 
@@ -143,15 +143,15 @@ Based on detected languages and existing config files, propose a full plugin lis
 
 **How to select plugins:**
 
-1. **Verify availability first.** Before including any plugin, confirm it exists in the registry at https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — that directory is the authoritative source. The docs at docs.qlty.sh/plugins may be incomplete or outdated. Also check `references/plugin-registry.md` for notes on plugins with known caveats or registry limitations from past runs.
+1. **Only propose plugins you confirmed exist** in the GitHub registry fetched in Phase 2. If a plugin name doesn't appear as a subdirectory there, don't add it — check `references/plugin-registry.md` for any known caveats on why.
 
-2. **Mutual-exclusion rules** (tool design constraints, not registry facts):
+2. **Mutual-exclusion rules:**
    - **biome** replaces eslint and prettier — if `biome.json`/`biome.jsonc` present, do NOT also add eslint or prettier.
    - **standardrb** replaces rubocop — if `.standard.yml` present, use standardrb, not rubocop.
    - **golangci-lint** replaces gofmt — if `.golangci.*` present, do NOT also add gofmt.
    - **oxc** coexists with eslint — unlike biome, both can be enabled together.
 
-3. **Security baseline (always recommend):** `trufflehog` for secrets. `osv-scanner` or `trivy` if dependency lockfiles present. `zizmor` if GitHub Actions workflows present (strong signal: `zizmor.yml` already in the repo's CI).
+3. **Security baseline (always recommend):** `trufflehog` for secrets. `osv-scanner` or `trivy` if lockfiles present. `zizmor` if GitHub Actions workflows present.
 
 4. **Cross-language tools:** Recommend based on what's in the repo — `markdownlint` (`.md` files), `actionlint` + `yamllint` (`.github/workflows/`), `checkov` (Docker/Terraform/K8s), `kube-linter` (K8s manifests), `spectral` (OpenAPI specs), `vale` (prose docs).
 
