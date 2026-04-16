@@ -54,6 +54,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `phpcs.xml`, `.phpcs.xml` | php-codesniffer | PHP style — check for custom sniffs in config |
 | `.php-cs-fixer.dist.php`, `.php-cs-fixer.php` | php-cs-fixer | PHP formatter — mutually exclusive with php-codesniffer for formatting |
 | `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | phpstan | PHP static analysis |
+| `psalm.xml`, `psalm.xml.dist` | *(not supported)* | Psalm is NOT in the public Qlty plugin registry — do NOT add a `[[plugin]] name = "psalm"` block, it causes Build errored |
 | `.golangci.yml`, `.golangci.yaml`, `.golangci.json`, `.golangci.toml` | golangci-lint | Go meta-linter — replaces standalone gofmt for many teams |
 | (no config needed) | gofmt | Go formatter — use golangci-lint instead if `.golangci.*` exists |
 | `.clippy.toml`, `clippy.toml` | clippy | Rust linter |
@@ -151,7 +152,7 @@ Based on detected languages and existing config files, propose a full plugin lis
   - Go: if `.golangci.*` config exists, use ONLY `golangci-lint` — do NOT also add `gofmt` (golangci-lint already wraps it). If no `.golangci.*` exists, use `gofmt`.
   - Java: `google-java-format` for formatting, `pmd` for static analysis. Add `radarlint-java` for deep quality analysis **(enterprise only — requires separate setup; omit unless user confirms Qlty enterprise access)**.
   - Kotlin: `ktlint` for formatting/linting. Add `radarlint-kotlin` for deep quality analysis **(enterprise only — requires separate setup; omit unless user confirms Qlty enterprise access)**.
-  - PHP: `phpstan` for static analysis, `php-codesniffer` for style. Use `php-cs-fixer` instead of php-codesniffer if `.php-cs-fixer.*` exists.
+  - PHP: `phpstan` for static analysis, `php-codesniffer` for style. Use `php-cs-fixer` instead of php-codesniffer if `.php-cs-fixer.*` exists. **Do NOT add `psalm` — it is NOT in the public Qlty plugin registry and will cause Build errored.**
   - Rust: `clippy` for linting, `rustfmt` for formatting.
   - Swift: `swiftlint` for linting, `swiftformat` for formatting.
   - Shell: `shellcheck` for linting, `shfmt` for formatting.
