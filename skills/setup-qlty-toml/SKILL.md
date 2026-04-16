@@ -518,7 +518,11 @@ Only include sections with non-default values or explicit user decisions. Includ
   - Any `extra_packages` added and why
   - Any manual steps the user needs to take
 
-### 3. Print a configuration rundown
+### 3. Update `references/plugin-registry.md` if you learned something new
+
+If during this run you discovered that a plugin is missing from the public registry, causes Build errored, or has a caveat not already recorded, update `references/plugin-registry.md` in this skill's repo directly — do not wait for a separate evolve run. Add a row to the appropriate table with a `Last confirmed` date. This keeps the reference useful for the next agent.
+
+### 4. Print a configuration rundown
 
 After the PR is open, print a clean summary:
 
