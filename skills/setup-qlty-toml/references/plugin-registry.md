@@ -6,6 +6,14 @@ Plugin availability is always checked live from https://github.com/qltysh/qlty/t
 
 ---
 
+## `radarlint-*`
+
+All `radarlint-*` variants (`radarlint-java`, `radarlint-kotlin`, `radarlint-js`, `radarlint-php`, `radarlint-python`, `radarlint-ruby`, `radarlint-go`, `radarlint-iac`, `radarlint-scala`) are in the public registry and work without enterprise access. Include them in `monitor` mode — they can be noisy on first runs but are valid to enable.
+
+*Confirmed working: gson build passed with radarlint-java in comment mode (2026-04-16)*
+
+---
+
 ## `tsc`
 
 **Only enable if the project already passes `tsc --noEmit` in CI.** On real-world TypeScript repos with uncertain compilation status, `tsc` causes "Build errored" in Qlty Cloud even with `skip_upstream = true`. When in doubt, skip `tsc` and rely on `eslint` with `@typescript-eslint` for TypeScript linting.
