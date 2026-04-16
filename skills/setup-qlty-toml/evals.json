@@ -751,6 +751,173 @@
         "At least one [[triage]] or [[exclude]] block scopes vale to docs/ directory",
         "trufflehog is enabled and set to block mode"
       ]
+    },
+    {
+      "id": 41,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/simple_form. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/simple_form --head qlty-setup --base main.\n\nsimple_form is a Ruby/Rails form builder gem. It uses RuboCop (rubocop gem in Gemfile, .rubocop.yml present) and haml-lint (haml-lint gem in Gemfile, .haml-lint.yml present for HAML template linting). Configure qlty.toml with: rubocop with package_file = \"Gemfile\" and package_filters = [\"rubocop\"] to pick up rubocop extensions; haml-lint for HAML template quality; reek for Ruby code smells. Set rubocop to monitor mode for Style/* and Layout/* cops using [[triage]] since rubocop is already enforced in CI — only keep it active for security and bug-finding cops. Set haml-lint to comment mode.",
+      "expected_output": "PR with qlty.toml: rubocop (Gemfile package_file, package_filters=[rubocop]), haml-lint (comment mode), reek. [[triage]] downgrading Style/* and Layout/* rubocop cops to monitor.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/simple_form with branch qlty-setup",
+        "rubocop plugin is enabled with package_file = \"Gemfile\"",
+        "package_filters includes \"rubocop\" (to pick up rubocop-rails, rubocop-rspec, etc.)",
+        "haml-lint plugin is enabled",
+        "haml-lint is set to comment mode",
+        "reek plugin is enabled",
+        "At least one [[triage]] block targets rubocop Style/* or Layout/* cops and sets them to monitor mode",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 42,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-ts-knip. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-ts-knip --head qlty-setup --base main.\n\nqlty-test-ts-knip is a TypeScript project with intentional unused exports and dependencies to exercise knip. It has both a knip.config.ts (knip configuration) and an eslint.config.mjs (flat ESLint config with typescript-eslint). Configure qlty.toml with: knip for unused exports/dependency detection (set to monitor mode — informational); eslint with flat config (eslint.config.mjs). Note: knip is a TypeScript-specific tool for detecting dead code and unused dependencies — it is NOT a replacement for eslint, they serve different purposes and should both be enabled.",
+      "expected_output": "PR with qlty.toml: knip (monitor mode, config_files=[\"knip.config.ts\"]), eslint (config_files=[\"eslint.config.mjs\"]).",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-ts-knip with branch qlty-setup",
+        "knip plugin is enabled",
+        "knip is set to monitor mode (informational — unused code is a refactoring concern, not a block)",
+        "eslint plugin is enabled",
+        "eslint config_files references eslint.config.mjs (flat config format)",
+        "Both knip and eslint are present (they serve different purposes)",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 43,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/Slim. Default branch is 4.x. When creating the PR, use: gh pr create --repo laura-mlg/Slim --head qlty-setup --base 4.x.\n\nSlim is a PHP micro framework. It has a phpcs.xml.dist file (PHP_CodeSniffer configuration) and a phpstan.neon (PHPStan config). NOTE: This project uses PHP_CodeSniffer (phpcs), NOT php-cs-fixer — these are different tools. phpcs.xml.dist is the config file for phpcs. Configure qlty.toml with: php-codesniffer (NOT php-cs-fixer) with config_files = [\"phpcs.xml.dist\"]; phpstan with config_files = [\"phpstan.neon\"]; psalm if a psalm.xml or psalm.xml.dist is present. Set phpstan to comment mode (static analysis findings are informational for an established library).",
+      "expected_output": "PR with qlty.toml: php-codesniffer (config_files=[phpcs.xml.dist]), phpstan (config_files=[phpstan.neon], comment mode). NOT php-cs-fixer.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/Slim with branch qlty-setup",
+        "php-codesniffer plugin is enabled (NOT php-cs-fixer)",
+        "php-codesniffer has config_files = [\"phpcs.xml.dist\"]",
+        "phpstan plugin is enabled",
+        "phpstan has config_files = [\"phpstan.neon\"]",
+        "phpstan is set to comment mode",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 44,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/click. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/click --head qlty-setup --base main.\n\nclick is a Python CLI library. Its pyproject.toml contains both [tool.mypy] (with strict = true) and [tool.ruff] sections. Configure qlty.toml with: mypy for type checking with affects_cache = [\"pyproject.toml\"] (so cache invalidates when mypy config changes); ruff for linting and formatting (replaces flake8/black). Set mypy to comment mode (type errors are informational for an established library). Use [[triage]] to downgrade mypy findings on test files (tests/conftest.py etc.) to monitor mode — test scaffolding often uses type: ignore patterns legitimately.",
+      "expected_output": "PR with qlty.toml: mypy (comment mode, affects_cache=[\"pyproject.toml\"]), ruff. [[triage]] downgrading mypy findings on tests/ to monitor.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/click with branch qlty-setup",
+        "mypy plugin is enabled",
+        "mypy is set to comment mode",
+        "mypy has affects_cache = [\"pyproject.toml\"]",
+        "ruff plugin is enabled (pyproject.toml has [tool.ruff])",
+        "At least one [[triage]] block targets mypy findings on tests/ directory and sets them to monitor mode",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 45,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-prisma. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-prisma --head qlty-setup --base main.\n\nqlty-test-prisma is a TypeScript/Node.js project using Prisma ORM. It has a prisma/schema.prisma file (Prisma schema) and an .eslintrc.json file. Configure qlty.toml with: prisma for schema formatting/linting (the prisma Qlty plugin checks and formats Prisma schema files); eslint for TypeScript linting. Set prisma to comment mode (formatting-only tool, not a security gate). Note: prisma is a separate Qlty plugin distinct from eslint — both should be enabled.",
+      "expected_output": "PR with qlty.toml: prisma (comment mode), eslint. Both enabled since they serve different purposes.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-prisma with branch qlty-setup",
+        "prisma plugin is enabled",
+        "prisma is set to comment mode",
+        "eslint plugin is enabled",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 46,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/dry-core. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/dry-core --head qlty-setup --base main.\n\ndry-core is a Ruby gem. It has a .standard.yml file (StandardRB configuration). IMPORTANT: StandardRB is an opinionated Ruby linter/formatter that wraps RuboCop — when .standard.yml is present, use the standardrb Qlty plugin instead of rubocop. Do NOT enable both rubocop and standardrb — they are mutually exclusive. Configure qlty.toml with: standardrb (NOT rubocop) since .standard.yml is present; reek for code smells. Set standardrb to comment mode.",
+      "expected_output": "PR with qlty.toml: standardrb (comment mode, NOT rubocop), reek. The presence of .standard.yml means standardrb is the right tool.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/dry-core with branch qlty-setup",
+        "standardrb plugin is enabled (NOT rubocop)",
+        "rubocop is NOT present in the config (standardrb replaces it)",
+        "standardrb is set to comment mode",
+        "reek plugin is enabled",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 47,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-dotenv. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-dotenv --head qlty-setup --base main.\n\nqlty-test-dotenv is a TypeScript/Node.js project with multiple .env files (.env.example, .env.development). It has dotenv-style configuration. Configure qlty.toml with: dotenv-linter for .env file validation (checks for duplicate keys, incorrect format, etc.); eslint for TypeScript linting (tsconfig.json present); osv-scanner for npm dependency security scanning. Set dotenv-linter to comment mode (env file issues are informational). Use [[exclude]] to skip .env.example from dotenv-linter (example files intentionally have placeholder values).",
+      "expected_output": "PR with qlty.toml: dotenv-linter (comment mode), eslint, osv-scanner. [[exclude]] skipping .env.example from dotenv-linter.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-dotenv with branch qlty-setup",
+        "dotenv-linter plugin is enabled",
+        "dotenv-linter is set to comment mode",
+        "eslint plugin is enabled",
+        "osv-scanner or trivy is enabled for npm dependency scanning",
+        "At least one [[exclude]] or exclude_patterns entry covers .env.example or example env files",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 48,
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-oxc. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-oxc --head qlty-setup --base main.\n\nqlty-test-oxc is a TypeScript project with both eslint.config.mjs (flat ESLint config) and .oxlintrc.json (oxc/oxlint config). IMPORTANT: Unlike Biome, oxc does NOT replace ESLint — both can and should be enabled together. oxc is a fast Rust-based linter that catches a subset of issues; eslint catches additional issues via plugins. Configure qlty.toml with: oxc for fast JS/TS linting (config_files = [\".oxlintrc.json\"]); eslint for full plugin-based linting (config_files = [\"eslint.config.mjs\"]). Both should be enabled.",
+      "expected_output": "PR with qlty.toml: oxc (config_files=[.oxlintrc.json]) AND eslint (config_files=[eslint.config.mjs]). Both enabled — oxc does not replace eslint.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/qlty-test-oxc with branch qlty-setup",
+        "oxc plugin is enabled",
+        "oxc has config_files = [\".oxlintrc.json\"]",
+        "eslint plugin is enabled",
+        "eslint has config_files = [\"eslint.config.mjs\"]",
+        "Both oxc and eslint are present (they coexist unlike biome which is exclusive)",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 49,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/chalk. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/chalk --head qlty-setup --base main.\n\nchalk is a Node.js terminal string styling library written in JavaScript/TypeScript. It has an .editorconfig file (EditorConfig rules for indentation, line endings, charset). Configure qlty.toml with: editorconfig-checker (validates all source files match .editorconfig rules); eslint for JS/TS linting. Set editorconfig-checker to monitor mode (formatting consistency issues are informational). Use [[exclude]] to skip node_modules/, dist/, and any generated files from editorconfig-checker.",
+      "expected_output": "PR with qlty.toml: editorconfig-checker (monitor mode), eslint. [[exclude]] skipping node_modules/ and dist/ from editorconfig-checker.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/chalk with branch qlty-setup",
+        "editorconfig-checker plugin is enabled",
+        "editorconfig-checker is set to monitor mode",
+        "eslint plugin is enabled",
+        "At least one exclude_patterns or [[exclude]] entry covers node_modules/ and/or dist/",
+        "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 50,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/puma. Default branch is main. This repo already has a qlty.toml from a previous setup attempt (branch qlty-setup-v3 may exist — check with gh pr list --repo laura-mlg/puma). Create a NEW branch qlty-setup-v4. When creating the PR, use: gh pr create --repo laura-mlg/puma --head qlty-setup-v4 --base main.\n\npuma is a Ruby HTTP server. The existing qlty.toml likely has rubocop and brakeman. Your task is to REFINE the existing configuration: add reek for code smell detection; review the rubocop configuration and add [[triage]] blocks to downgrade Style/* and Layout/* cops to monitor mode (puma uses rubocop for formatting already in CI, so Qlty should only highlight non-style issues); add [[smells]] configuration with mode = \"comment\" and sensible thresholds. Review the existing config and improve it — do not start from scratch.",
+      "expected_output": "PR with improved qlty.toml: existing rubocop/brakeman retained, reek added, [[triage]] for Style/Layout cops, [[smells]] configuration.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/puma with branch qlty-setup-v4",
+        "Existing rubocop plugin is retained (not removed or rewritten from scratch)",
+        "Existing brakeman plugin is retained",
+        "reek plugin is added",
+        "At least one [[triage]] block targets rubocop Style/* or Layout/* cops and sets them to monitor mode",
+        "[[smells]] section is present with mode = \"comment\"",
+        "trufflehog is enabled and set to block mode"
+      ]
     }
   ]
 }
