@@ -110,18 +110,21 @@ Produce a brief summary of findings, then move on to Phase 2.
 
 ## Phase 2: Fetch Documentation
 
-Before making decisions, fetch these reference pages so your recommendations are grounded in current data:
+Before making decisions, fetch what you need from these sources:
 
-- https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — **authoritative plugin list** (browse this to see exactly which plugins exist; each subdirectory is an available plugin name)
-- https://docs.qlty.sh/qlty-toml — full TOML field reference (plugins, smells, triage, sources)
+**Plugin availability — always check this first:**
+- https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — authoritative list of available plugins; each subdirectory name is a valid plugin name
+
+**Config reference** (useful but may not be complete or fully up to date):
+- https://docs.qlty.sh/qlty-toml — TOML field reference
 - https://docs.qlty.sh/analysis-configuration — maintainability checks and thresholds
 - https://docs.qlty.sh/excluding-files — exclude patterns and per-plugin exclusions
 - https://docs.qlty.sh/silencing-issues — `qlty-ignore` inline comment syntax
 - https://docs.qlty.sh/cli/linter-extensions — `extra_packages` vs `package_file` vs `package_filters`
 
-Also read the local reference files in `references/` (same directory as this SKILL.md) — they contain caveats and config patterns from past runs.
+**For deeper config questions:** If the docs don't cover a specific plugin's options (valid fields, driver values, version constraints), check the plugin's source directly at https://github.com/qltysh/qlty — the source is always more complete than the docs.
 
-**Note on docs.qlty.sh/plugins:** that page may be incomplete — the GitHub directory above is the source of truth for what plugins actually exist.
+**Accumulated learnings:** Read `references/plugin-registry.md` for known cases and caveats from past runs — specific situations that aren't obvious from the docs or registry alone.
 
 ---
 
