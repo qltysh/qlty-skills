@@ -260,7 +260,7 @@ name = "tsc"
 skip_upstream = true
 ```
 
-**Warning on `tsc` plugin:** Only enable `tsc` if the project already passes `tsc --noEmit` in CI. When in doubt, skip `tsc` and rely on `eslint` with `@typescript-eslint` instead. See `references/plugin-registry.md` for details. Also: `xo`-based projects (those with `"xo"` in devDependencies) use xo as a CLI linter wrapping eslint — do NOT add the eslint plugin for xo projects, as xo bundles its own eslint internals.
+**Do not use the `tsc` plugin.** It is marked `hidden = true` in the Qlty registry with no `known_good` version — it fails config validation before running. Use `eslint` with `@typescript-eslint` for TypeScript linting instead. Also: `xo`-based projects (those with `"xo"` in devDependencies) use xo as a CLI linter wrapping eslint — do NOT add the eslint plugin for xo projects, as xo bundles its own eslint internals.
 
 **`.qlty/configs/` directory** — If you want to store a plugin's config file inside the `.qlty/` directory (to keep it out of the repo root), Qlty will automatically provision it during analysis. Reference it with a relative path in `config_files`:
 

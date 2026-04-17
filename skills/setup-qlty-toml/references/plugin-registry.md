@@ -16,9 +16,15 @@ All `radarlint-*` variants (`radarlint-java`, `radarlint-kotlin`, `radarlint-js`
 
 ## `tsc`
 
-**Only enable if the project already passes `tsc --noEmit` in CI.** On real-world TypeScript repos with uncertain compilation status, `tsc` causes "Build errored" in Qlty Cloud even with `skip_upstream = true`. When in doubt, skip `tsc` and rely on `eslint` with `@typescript-eslint` for TypeScript linting.
+**Do not use.** The `tsc` plugin is marked `hidden = true` in the Qlty registry and has no `known_good` version defined. Including it causes config validation to fail immediately with:
 
-*Last seen: evals 26–30 (2026-04-15)*
+```
+The enabled plugin version is "known_good", but the known good version is unknown: tsc
+```
+
+This happens before any code runs — the build is rejected at the validate config step. Use `eslint` with `@typescript-eslint` for TypeScript linting instead.
+
+*Confirmed broken at config validation (2026-04-16)*
 
 ---
 
