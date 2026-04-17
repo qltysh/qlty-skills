@@ -75,7 +75,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `.semgrep.yaml`, `.semgrepignore`, `.semgrep` | semgrep | Multi-language semantic code scanner |
 | `sqlfluff.cfg`, `.sqlfluff` | sqlfluff | SQL linter |
 | `.spectral.yml`, `.spectral.yaml`, `.spectral.json`, `.spectral.js` | spectral | OpenAPI/AsyncAPI spec linter |
-| `.vale.ini` | vale | Prose/documentation linter |
+| `.vale.ini` | vale | Prose/documentation linter — **only enable if `.vale/styles` is committed to the repo** (see `references/plugin-registry.md`) |
 | `sgconfig.yml` | ast-grep | Structural code search/lint (language-agnostic) |
 | `.kube-linter.yaml`, `.kube-linter.yml` | kube-linter | Kubernetes manifest linter |
 | `zizmor.yml`, `.github/workflows/zizmor.yml` | zizmor | GitHub Actions security scanner (more thorough than actionlint for security). **Note: zizmor may not appear on docs.qlty.sh/plugins — it IS a supported Qlty plugin.** |
@@ -270,7 +270,9 @@ name = "rubocop"
 config_files = [".qlty/configs/.rubocop.yml"]
 ```
 
-**Warning for ESM projects:** If the project has `"type": "module"` in `package.json`, a `.eslintrc.js` stored in `.qlty/configs/` will fail because Node treats `.js` as ESM but the config uses `module.exports` (CommonJS). Use `.eslintrc.cjs` (explicit CJS extension) instead: `config_files = [".qlty/configs/.eslintrc.cjs"]`.
+**ESLint 9 flat config required:** Qlty's eslint plugin uses ESLint 9.7.0, which only supports flat config (`eslint.config.js`). Legacy `.eslintrc.js` / `.eslintrc.*` files are silently ignored — DO NOT use legacy config in `config_files`. If pointing to a config in `.qlty/configs/`, create `eslint.config.js` (CJS format: `module.exports = [...]`). You cannot downgrade the eslint version via `extra_packages` — Qlty validates the installed version and rejects mismatches. See `references/plugin-registry.md` for a flat config example with `@typescript-eslint`.
+
+**Warning for ESM projects:** If the project has `"type": "module"` in `package.json`, use `eslint.config.mjs` (with `export default [...]`) in `.qlty/configs/` — not `.js`.
 
 Show each proposed entry and explain why. Ask the user to confirm or adjust package versions.
 

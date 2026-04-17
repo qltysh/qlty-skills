@@ -49,3 +49,48 @@ May cause "Build errored" in Qlty Cloud. Use `set.mode` instead for suppression.
 IS a supported Qlty plugin despite not appearing on docs.qlty.sh/plugins. Strong signal to include: `zizmor.yml` already exists in the repo's `.github/workflows/`.
 
 *Last seen: evals 41–50 (2026-04-16)*
+
+---
+
+## `eslint` — ESLint 9 flat config required
+
+Qlty's eslint plugin uses **ESLint 9.7.0** (flat config). Legacy `.eslintrc.js` configs are not loaded by ESLint 9. When you specify `config_files = [".qlty/configs/.eslintrc.js"]`, Qlty tries to pass `--config ""` (empty), which fails with:
+
+```
+Value for 'config' of type 'path::String' required.
+You're using eslint.config.js, some command line flags are no longer available.
+```
+
+**Fix:** Use a flat config file (`eslint.config.js`) in `config_files`, not a legacy `.eslintrc.js`.
+You cannot override the eslint version via `extra_packages` — Qlty validates the installed version matches the plugin's known_good version and rejects mismatches.
+
+Flat config example for `@typescript-eslint` (compatible with v5 in CJS repos):
+```js
+const tsParser = require("@typescript-eslint/parser");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
+module.exports = [
+  {
+    files: ["**/*.ts"],
+    languageOptions: { parser: tsParser },
+    plugins: { "@typescript-eslint": tsPlugin },
+    rules: { "@typescript-eslint/no-explicit-any": "warn" },
+  },
+];
+```
+
+*Confirmed 2026-04-17*
+
+---
+
+## `vale` — requires `vale sync` before running
+
+Vale requires a `.vale/styles` directory populated by `vale sync` (downloads style packages). If the styles directory is missing, the build fails at runtime with:
+
+```
+[E100] [NewE201] Runtime error
+The path '/path/to/repo/.vale/styles' does not exist.
+```
+
+**Only enable vale if `.vale/styles` is committed to the repo** (or if the CI runs `vale sync` before the Qlty check). Most repos do not commit the styles directory — skip vale unless you can confirm styles are available.
+
+*Confirmed 2026-04-17*
