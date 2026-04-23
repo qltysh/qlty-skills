@@ -514,20 +514,50 @@ file_patterns = [...]
 
 Only include sections with non-default values or explicit user decisions. Include `[[triage]]` blocks only when Decision 8 identified specific rules to adjust. Don't add empty blocks.
 
-### 2. Create a branch and open a PR
+### 2. Verify locally with `qlty check --sample`
+
+Before opening the PR, run:
+
+```bash
+qlty check --sample
+```
+
+This runs all enabled plugins on a random sample of real files and catches runtime crashes — failures that TOML syntax validation and `qlty plugins list` would both miss. A config can be structurally valid and still cause "Build errored" in Qlty Cloud if a plugin crashes at runtime (wrong config format, missing binary, incompatible version, missing styles directory, etc.).
+
+**For each plugin that errors:**
+
+1. **Check the debug output:** Qlty prints a path to a debug `.yaml` file alongside the error message. Read it — it contains the exact command that was run and stderr output.
+2. **Check the troubleshooting docs:** https://qlty.sh/d/lint-error
+3. **Attempt a fix:** common fixes include correcting `config_files` paths, adjusting `extra_packages`, removing an unsupported field, or updating the plugin's config format (e.g., ESLint flat config).
+4. **If not fixable:** comment out the entire `[[plugin]]` block. Put a one-line explanation on the line immediately above `# [[plugin]]`:
+
+```toml
+# disabled: ESLint 9 flat config required but project uses legacy .eslintrc.js — re-enable after migrating config
+# [[plugin]]
+# name = "eslint"
+# mode = "comment"
+# config_files = [".eslintrc.js"]
+```
+
+After resolving or disabling all errors, run `qlty check --sample` again and confirm it completes without any `Error` results before proceeding.
+
+**Do not open the PR while any plugin is in an error state.** An erroring plugin causes "Build errored" for the entire Qlty Cloud build — blocking all PR feedback, not just the failing plugin.
+
+### 3. Create a branch and open a PR
 
 - Branch: `qlty-setup` (or `qlty-config` if that already exists)
 - Commit: `Add .qlty/qlty.toml configuration`
 - PR description should include:
   - Every plugin enabled and its mode
   - Any `extra_packages` added and why
+  - Any plugins that were disabled during local verification, and why
   - Any manual steps the user needs to take
 
-### 3. Update `references/plugin-registry.md` if you learned something new
+### 4. Update `references/plugin-registry.md` if you learned something new
 
 If during this run you discovered that a plugin is missing from the public registry, causes Build errored, or has a caveat not already recorded, update `references/plugin-registry.md` in this skill's repo directly — do not wait for a separate evolve run. Add a row to the appropriate table with a `Last confirmed` date. This keeps the reference useful for the next agent.
 
-### 4. Print a configuration rundown
+### 5. Print a configuration rundown
 
 After the PR is open, print a clean summary:
 
@@ -539,7 +569,6 @@ Plugins enabled: 9
   BLOCK   trufflehog      — secrets detection (all files)
   BLOCK   zizmor          — GitHub Actions security
   COMMENT eslint          — JS/TS linting (extras: @typescript-eslint/eslint-plugin, eslint-plugin-react)
-  COMMENT tsc             — TypeScript type checking
   COMMENT prettier        — formatting (JS/TS/CSS/Markdown)
   BLOCK   osv-scanner     — dependency vulnerability scanning
   BLOCK   checkov         — infrastructure security (IaC files)
@@ -550,6 +579,9 @@ Plugins enabled: 9
 Smells: enabled (comment mode), function_parameters threshold = 5
 
 Exclude patterns: 7 (node_modules, dist, generated, *.min.*, *.d.ts, fixtures, .yarn)
+
+Disabled during local verification: 1
+  DISABLED  vale  — .vale/styles not committed; run "vale sync" and commit styles to re-enable
 ```
 
 For any plugin with a non-default mode or config, add a one-line explanation:
