@@ -590,7 +590,7 @@
     },
     {
       "id": 32,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/hono. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/hono --head qlty-setup --base main.\n\nhono is a TypeScript web framework. The repo has biome.json (added for this eval), eslint config, and prettier. When biome.json is present, use ONLY biome — do NOT add eslint or prettier. The biome.json covers both linting and formatting. Configure qlty.toml with biome (covering both lint and format), trufflehog, markdownlint, actionlint, yamllint.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/hono. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/hono --head qlty-setup --base main.\n\nhono is a TypeScript web framework. The repo has biome.json (added for this eval), eslint config, and prettier. When biome.json is present, use ONLY biome \u2014 do NOT add eslint or prettier. The biome.json covers both linting and formatting. Configure qlty.toml with biome (covering both lint and format), trufflehog, markdownlint, actionlint, yamllint.",
       "expected_output": "PR with qlty.toml using ONLY biome for JS/TS linting+formatting. No eslint, no prettier. biome is the exclusive JS/TS tool when biome.json is detected.",
       "files": [
         ".qlty/qlty.toml"
@@ -598,7 +598,7 @@
       "expectations": [
         "Created a PR on laura-mlg/hono with branch qlty-setup",
         "biome plugin is enabled",
-        "eslint plugin is NOT enabled (biome.json present — biome is exclusive)",
+        "eslint plugin is NOT enabled (biome.json present \u2014 biome is exclusive)",
         "prettier plugin is NOT enabled (biome handles formatting)",
         "trufflehog is enabled and set to block mode",
         "markdownlint is enabled (markdown files present)",
@@ -608,7 +608,7 @@
     },
     {
       "id": 33,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/sidekiq. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/sidekiq --head qlty-setup --base main.\n\nsidekiq is a popular Ruby background job library. It has a .rubocop.yml config and rubocop extensions in its Gemfile (rubocop-performance, rubocop-minitest). It also has a .reek.yml added for code smell detection. The team uses rubocop for LINTING ONLY — not as a formatter (they use a separate formatter). To achieve linting-only behavior: use [[triage]] blocks to set all rubocop Style/* and Layout/* rules to monitor mode (treating them as formatting noise, not linting issues). Separate rubocop linting rules (Lint/*, Performance/*, Security/*) should stay at comment mode. Also enable reek for smell detection.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/sidekiq. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/sidekiq --head qlty-setup --base main.\n\nsidekiq is a popular Ruby background job library. It has a .rubocop.yml config and rubocop extensions in its Gemfile (rubocop-performance, rubocop-minitest). It also has a .reek.yml added for code smell detection. The team uses rubocop for LINTING ONLY \u2014 not as a formatter (they use a separate formatter). To achieve linting-only behavior: use [[triage]] blocks to set all rubocop Style/* and Layout/* rules to monitor mode (treating them as formatting noise, not linting issues). Separate rubocop linting rules (Lint/*, Performance/*, Security/*) should stay at comment mode. Also enable reek for smell detection.",
       "expected_output": "PR with qlty.toml: rubocop with Gemfile package_file, [[triage]] moving Style/* and Layout/* cop categories to monitor, reek with .reek.yml config_files. Demonstrates rubocop as linter-only via triage.",
       "files": [
         ".qlty/qlty.toml"
@@ -643,7 +643,7 @@
     },
     {
       "id": 35,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/flysystem. Default branch is 3.x. When creating the PR, use: gh pr create --repo laura-mlg/flysystem --head qlty-setup --base 3.x.\n\nflysystem is a PHP filesystem abstraction library. It has both phpstan.neon AND .php-cs-fixer.dist.php config files. Configure qlty.toml with: php-cs-fixer for formatting (NOT php-codesniffer — .php-cs-fixer.dist.php takes precedence); phpstan for static analysis using config_files = [\"phpstan.neon\"]. phpstan requires phpstan/phpstan-strict-rules as an extra_package (used via phpstan.neon extends). Use [[triage]] to downgrade a phpstan rule about mixed types to monitor mode for this first-time setup.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/flysystem. Default branch is 3.x. When creating the PR, use: gh pr create --repo laura-mlg/flysystem --head qlty-setup --base 3.x.\n\nflysystem is a PHP filesystem abstraction library. It has both phpstan.neon AND .php-cs-fixer.dist.php config files. Configure qlty.toml with: php-cs-fixer for formatting (NOT php-codesniffer \u2014 .php-cs-fixer.dist.php takes precedence); phpstan for static analysis using config_files = [\"phpstan.neon\"]. phpstan requires phpstan/phpstan-strict-rules as an extra_package (used via phpstan.neon extends). Use [[triage]] to downgrade a phpstan rule about mixed types to monitor mode for this first-time setup.",
       "expected_output": "PR with qlty.toml: php-cs-fixer (not php-codesniffer), phpstan with config_files + extra_packages for phpstan extensions, [[triage]] for phpstan mixed-type rule.",
       "files": [
         ".qlty/qlty.toml"
@@ -651,7 +651,7 @@
       "expectations": [
         "Created a PR on laura-mlg/flysystem with branch qlty-setup on base 3.x",
         "php-cs-fixer plugin is enabled for PHP formatting",
-        "php-codesniffer is NOT enabled (.php-cs-fixer.dist.php detected — use php-cs-fixer)",
+        "php-codesniffer is NOT enabled (.php-cs-fixer.dist.php detected \u2014 use php-cs-fixer)",
         "phpstan plugin is enabled with config_files = [\"phpstan.neon\"]",
         "phpstan plugin has extra_packages listing at least one phpstan extension (e.g., phpstan/phpstan-strict-rules)",
         "At least one [[triage]] block targets a phpstan rule",
@@ -678,7 +678,7 @@
     },
     {
       "id": 37,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/commons-lang. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/commons-lang --head qlty-setup --base master.\n\napache/commons-lang is a Java utility library with checkstyle configuration in src/conf/checkstyle/. Configure qlty.toml with: google-java-format for formatting; pmd for static analysis (set to monitor initially — noisy on first run); radarlint-java for deep code quality analysis in comment mode. Java-specific smells: enterprise Java typically has higher complexity — set language.java.smells function_complexity threshold to 20 and function_parameters to 6. Use [[triage]] to suppress a specific pmd rule (e.g., UselessParentheses or ExcessiveImports) that is known to be noisy.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/commons-lang. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/commons-lang --head qlty-setup --base master.\n\napache/commons-lang is a Java utility library with checkstyle configuration in src/conf/checkstyle/. Configure qlty.toml with: google-java-format for formatting; pmd for static analysis (set to monitor initially \u2014 noisy on first run); radarlint-java for deep code quality analysis in comment mode. Java-specific smells: enterprise Java typically has higher complexity \u2014 set language.java.smells function_complexity threshold to 20 and function_parameters to 6. Use [[triage]] to suppress a specific pmd rule (e.g., UselessParentheses or ExcessiveImports) that is known to be noisy.",
       "expected_output": "PR with qlty.toml: google-java-format, pmd (monitor), radarlint-java (comment), [language.java.smells] thresholds, [[triage]] for noisy pmd rules.",
       "files": [
         ".qlty/qlty.toml"
@@ -697,7 +697,7 @@
     },
     {
       "id": 38,
-      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-ts-multi-eslint. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-ts-multi-eslint --head qlty-setup --base main.\n\nThis is a TypeScript npm workspace monorepo with two packages needing SEPARATE eslint configurations:\n- packages/ui/ — React components with its own .eslintrc.js using eslint-plugin-react, eslint-plugin-react-hooks, @typescript-eslint\n- packages/api/ — Node.js API with its own .eslintrc.js using eslint-plugin-import, @typescript-eslint strict type-checking rules\n\nConfigure qlty.toml with TWO separate eslint [[plugin]] blocks: one scoped with prefix=\"packages/ui\" referencing packages/ui/.eslintrc.js and packages/ui/package.json for extra_packages; one scoped with prefix=\"packages/api\" referencing packages/api/.eslintrc.js and packages/api/package.json. Both use @typescript-eslint at v6.x (never v7+). Include trufflehog globally.",
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-ts-multi-eslint. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-ts-multi-eslint --head qlty-setup --base main.\n\nThis is a TypeScript npm workspace monorepo with two packages needing SEPARATE eslint configurations:\n- packages/ui/ \u2014 React components with its own .eslintrc.js using eslint-plugin-react, eslint-plugin-react-hooks, @typescript-eslint\n- packages/api/ \u2014 Node.js API with its own .eslintrc.js using eslint-plugin-import, @typescript-eslint strict type-checking rules\n\nConfigure qlty.toml with TWO separate eslint [[plugin]] blocks: one scoped with prefix=\"packages/ui\" referencing packages/ui/.eslintrc.js and packages/ui/package.json for extra_packages; one scoped with prefix=\"packages/api\" referencing packages/api/.eslintrc.js and packages/api/package.json. Both use @typescript-eslint at v6.x (never v7+). Include trufflehog globally.",
       "expected_output": "PR with qlty.toml containing two [[plugin]] name=\"eslint\" blocks: one with prefix=packages/ui + config_files + extra_packages for React deps; one with prefix=packages/api + config_files + extra_packages for API deps. Demonstrates per-package eslint scoping.",
       "files": [
         ".qlty/qlty.toml"
@@ -716,7 +716,7 @@
     },
     {
       "id": 39,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/serde. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/serde --head qlty-setup --base master.\n\nserde is a Rust serialization framework structured as a workspace with 5 crates: serde/, serde_core/, serde_derive/, serde_derive_internals/, test_suite/. A single qlty.toml config at the workspace root should cover all crates — do NOT scope by prefix. Configure qlty.toml with: clippy for linting; rustfmt for formatting; osv-scanner for Cargo.lock dependency scanning. Use [[triage]] to: downgrade clippy::complexity lint category findings to monitor mode (too noisy for a mature library); promote clippy::correctness to block mode (correctness issues should always be fixed).",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/serde. Default branch is master. When creating the PR, use: gh pr create --repo laura-mlg/serde --head qlty-setup --base master.\n\nserde is a Rust serialization framework structured as a workspace with 5 crates: serde/, serde_core/, serde_derive/, serde_derive_internals/, test_suite/. A single qlty.toml config at the workspace root should cover all crates \u2014 do NOT scope by prefix. Configure qlty.toml with: clippy for linting; rustfmt for formatting; osv-scanner for Cargo.lock dependency scanning. Use [[triage]] to: downgrade clippy::complexity lint category findings to monitor mode (too noisy for a mature library); promote clippy::correctness to block mode (correctness issues should always be fixed).",
       "expected_output": "PR with qlty.toml: clippy + rustfmt at workspace root covering all crates (no prefix). osv-scanner. [[triage]] downgrading clippy complexity to monitor, promoting correctness to block.",
       "files": [
         ".qlty/qlty.toml"
@@ -754,7 +754,7 @@
     },
     {
       "id": 41,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/simple_form. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/simple_form --head qlty-setup --base main.\n\nsimple_form is a Ruby/Rails form builder gem. It uses RuboCop (rubocop gem in Gemfile, .rubocop.yml present) and haml-lint (haml-lint gem in Gemfile, .haml-lint.yml present for HAML template linting). Configure qlty.toml with: rubocop with package_file = \"Gemfile\" and package_filters = [\"rubocop\"] to pick up rubocop extensions; haml-lint for HAML template quality; reek for Ruby code smells. Set rubocop to monitor mode for Style/* and Layout/* cops using [[triage]] since rubocop is already enforced in CI — only keep it active for security and bug-finding cops. Set haml-lint to comment mode.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/simple_form. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/simple_form --head qlty-setup --base main.\n\nsimple_form is a Ruby/Rails form builder gem. It uses RuboCop (rubocop gem in Gemfile, .rubocop.yml present) and haml-lint (haml-lint gem in Gemfile, .haml-lint.yml present for HAML template linting). Configure qlty.toml with: rubocop with package_file = \"Gemfile\" and package_filters = [\"rubocop\"] to pick up rubocop extensions; haml-lint for HAML template quality; reek for Ruby code smells. Set rubocop to monitor mode for Style/* and Layout/* cops using [[triage]] since rubocop is already enforced in CI \u2014 only keep it active for security and bug-finding cops. Set haml-lint to comment mode.",
       "expected_output": "PR with qlty.toml: rubocop (Gemfile package_file, package_filters=[rubocop]), haml-lint (comment mode), reek. [[triage]] downgrading Style/* and Layout/* rubocop cops to monitor.",
       "files": [
         ".qlty/qlty.toml"
@@ -772,7 +772,7 @@
     },
     {
       "id": 42,
-      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-ts-knip. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-ts-knip --head qlty-setup --base main.\n\nqlty-test-ts-knip is a TypeScript project with intentional unused exports and dependencies to exercise knip. It has both a knip.config.ts (knip configuration) and an eslint.config.mjs (flat ESLint config with typescript-eslint). Configure qlty.toml with: knip for unused exports/dependency detection (set to monitor mode — informational); eslint with flat config (eslint.config.mjs). Note: knip is a TypeScript-specific tool for detecting dead code and unused dependencies — it is NOT a replacement for eslint, they serve different purposes and should both be enabled.",
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-ts-knip. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-ts-knip --head qlty-setup --base main.\n\nqlty-test-ts-knip is a TypeScript project with intentional unused exports and dependencies to exercise knip. It has both a knip.config.ts (knip configuration) and an eslint.config.mjs (flat ESLint config with typescript-eslint). Configure qlty.toml with: knip for unused exports/dependency detection (set to monitor mode \u2014 informational); eslint with flat config (eslint.config.mjs). Note: knip is a TypeScript-specific tool for detecting dead code and unused dependencies \u2014 it is NOT a replacement for eslint, they serve different purposes and should both be enabled.",
       "expected_output": "PR with qlty.toml: knip (monitor mode, config_files=[\"knip.config.ts\"]), eslint (config_files=[\"eslint.config.mjs\"]).",
       "files": [
         ".qlty/qlty.toml"
@@ -780,7 +780,7 @@
       "expectations": [
         "Created a PR on laura-mlg/qlty-test-ts-knip with branch qlty-setup",
         "knip plugin is enabled",
-        "knip is set to monitor mode (informational — unused code is a refactoring concern, not a block)",
+        "knip is set to monitor mode (informational \u2014 unused code is a refactoring concern, not a block)",
         "eslint plugin is enabled",
         "eslint config_files references eslint.config.mjs (flat config format)",
         "Both knip and eslint are present (they serve different purposes)",
@@ -789,7 +789,7 @@
     },
     {
       "id": 43,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/Slim. Default branch is 4.x. When creating the PR, use: gh pr create --repo laura-mlg/Slim --head qlty-setup --base 4.x.\n\nSlim is a PHP micro framework. It has a phpcs.xml.dist file (PHP_CodeSniffer configuration) and a phpstan.neon (PHPStan config). NOTE: This project uses PHP_CodeSniffer (phpcs), NOT php-cs-fixer — these are different tools. phpcs.xml.dist is the config file for phpcs. Configure qlty.toml with: php-codesniffer (NOT php-cs-fixer) with config_files = [\"phpcs.xml.dist\"]; phpstan with config_files = [\"phpstan.neon\"]; psalm if a psalm.xml or psalm.xml.dist is present. Set phpstan to comment mode (static analysis findings are informational for an established library).",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/Slim. Default branch is 4.x. When creating the PR, use: gh pr create --repo laura-mlg/Slim --head qlty-setup --base 4.x.\n\nSlim is a PHP micro framework. It has a phpcs.xml.dist file (PHP_CodeSniffer configuration) and a phpstan.neon (PHPStan config). NOTE: This project uses PHP_CodeSniffer (phpcs), NOT php-cs-fixer \u2014 these are different tools. phpcs.xml.dist is the config file for phpcs. Configure qlty.toml with: php-codesniffer (NOT php-cs-fixer) with config_files = [\"phpcs.xml.dist\"]; phpstan with config_files = [\"phpstan.neon\"]; psalm if a psalm.xml or psalm.xml.dist is present. Set phpstan to comment mode (static analysis findings are informational for an established library).",
       "expected_output": "PR with qlty.toml: php-codesniffer (config_files=[phpcs.xml.dist]), phpstan (config_files=[phpstan.neon], comment mode). NOT php-cs-fixer.",
       "files": [
         ".qlty/qlty.toml"
@@ -806,7 +806,7 @@
     },
     {
       "id": 44,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/click. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/click --head qlty-setup --base main.\n\nclick is a Python CLI library. Its pyproject.toml contains both [tool.mypy] (with strict = true) and [tool.ruff] sections. Configure qlty.toml with: mypy for type checking with affects_cache = [\"pyproject.toml\"] (so cache invalidates when mypy config changes); ruff for linting and formatting (replaces flake8/black). Set mypy to comment mode (type errors are informational for an established library). Use [[triage]] to downgrade mypy findings on test files (tests/conftest.py etc.) to monitor mode — test scaffolding often uses type: ignore patterns legitimately.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/click. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/click --head qlty-setup --base main.\n\nclick is a Python CLI library. Its pyproject.toml contains both [tool.mypy] (with strict = true) and [tool.ruff] sections. Configure qlty.toml with: mypy for type checking with affects_cache = [\"pyproject.toml\"] (so cache invalidates when mypy config changes); ruff for linting and formatting (replaces flake8/black). Set mypy to comment mode (type errors are informational for an established library). Use [[triage]] to downgrade mypy findings on test files (tests/conftest.py etc.) to monitor mode \u2014 test scaffolding often uses type: ignore patterns legitimately.",
       "expected_output": "PR with qlty.toml: mypy (comment mode, affects_cache=[\"pyproject.toml\"]), ruff. [[triage]] downgrading mypy findings on tests/ to monitor.",
       "files": [
         ".qlty/qlty.toml"
@@ -823,7 +823,7 @@
     },
     {
       "id": 45,
-      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-prisma. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-prisma --head qlty-setup --base main.\n\nqlty-test-prisma is a TypeScript/Node.js project using Prisma ORM. It has a prisma/schema.prisma file (Prisma schema) and an .eslintrc.json file. Configure qlty.toml with: prisma for schema formatting/linting (the prisma Qlty plugin checks and formats Prisma schema files); eslint for TypeScript linting. Set prisma to comment mode (formatting-only tool, not a security gate). Note: prisma is a separate Qlty plugin distinct from eslint — both should be enabled.",
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-prisma. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-prisma --head qlty-setup --base main.\n\nqlty-test-prisma is a TypeScript/Node.js project using Prisma ORM. It has a prisma/schema.prisma file (Prisma schema) and an .eslintrc.json file. Configure qlty.toml with: prisma for schema formatting/linting (the prisma Qlty plugin checks and formats Prisma schema files); eslint for TypeScript linting. Set prisma to comment mode (formatting-only tool, not a security gate). Note: prisma is a separate Qlty plugin distinct from eslint \u2014 both should be enabled.",
       "expected_output": "PR with qlty.toml: prisma (comment mode), eslint. Both enabled since they serve different purposes.",
       "files": [
         ".qlty/qlty.toml"
@@ -838,7 +838,7 @@
     },
     {
       "id": 46,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/dry-core. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/dry-core --head qlty-setup --base main.\n\ndry-core is a Ruby gem. It has a .standard.yml file (StandardRB configuration). IMPORTANT: StandardRB is an opinionated Ruby linter/formatter that wraps RuboCop — when .standard.yml is present, use the standardrb Qlty plugin instead of rubocop. Do NOT enable both rubocop and standardrb — they are mutually exclusive. Configure qlty.toml with: standardrb (NOT rubocop) since .standard.yml is present; reek for code smells. Set standardrb to comment mode.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/dry-core. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/dry-core --head qlty-setup --base main.\n\ndry-core is a Ruby gem. It has a .standard.yml file (StandardRB configuration). IMPORTANT: StandardRB is an opinionated Ruby linter/formatter that wraps RuboCop \u2014 when .standard.yml is present, use the standardrb Qlty plugin instead of rubocop. Do NOT enable both rubocop and standardrb \u2014 they are mutually exclusive. Configure qlty.toml with: standardrb (NOT rubocop) since .standard.yml is present; reek for code smells. Set standardrb to comment mode.",
       "expected_output": "PR with qlty.toml: standardrb (comment mode, NOT rubocop), reek. The presence of .standard.yml means standardrb is the right tool.",
       "files": [
         ".qlty/qlty.toml"
@@ -871,8 +871,8 @@
     },
     {
       "id": 48,
-      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-oxc. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-oxc --head qlty-setup --base main.\n\nqlty-test-oxc is a TypeScript project with both eslint.config.mjs (flat ESLint config) and .oxlintrc.json (oxc/oxlint config). IMPORTANT: Unlike Biome, oxc does NOT replace ESLint — both can and should be enabled together. oxc is a fast Rust-based linter that catches a subset of issues; eslint catches additional issues via plugins. Configure qlty.toml with: oxc for fast JS/TS linting (config_files = [\".oxlintrc.json\"]); eslint for full plugin-based linting (config_files = [\"eslint.config.mjs\"]). Both should be enabled.",
-      "expected_output": "PR with qlty.toml: oxc (config_files=[.oxlintrc.json]) AND eslint (config_files=[eslint.config.mjs]). Both enabled — oxc does not replace eslint.",
+      "prompt": "IMPORTANT: This repo is at laura-mlg/qlty-test-oxc. Default branch is main. When creating the PR, use: gh pr create --repo laura-mlg/qlty-test-oxc --head qlty-setup --base main.\n\nqlty-test-oxc is a TypeScript project with both eslint.config.mjs (flat ESLint config) and .oxlintrc.json (oxc/oxlint config). IMPORTANT: Unlike Biome, oxc does NOT replace ESLint \u2014 both can and should be enabled together. oxc is a fast Rust-based linter that catches a subset of issues; eslint catches additional issues via plugins. Configure qlty.toml with: oxc for fast JS/TS linting (config_files = [\".oxlintrc.json\"]); eslint for full plugin-based linting (config_files = [\"eslint.config.mjs\"]). Both should be enabled.",
+      "expected_output": "PR with qlty.toml: oxc (config_files=[.oxlintrc.json]) AND eslint (config_files=[eslint.config.mjs]). Both enabled \u2014 oxc does not replace eslint.",
       "files": [
         ".qlty/qlty.toml"
       ],
@@ -904,7 +904,7 @@
     },
     {
       "id": 50,
-      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/puma. Default branch is main. This repo already has a qlty.toml from a previous setup attempt (branch qlty-setup-v3 may exist — check with gh pr list --repo laura-mlg/puma). Create a NEW branch qlty-setup-v4. When creating the PR, use: gh pr create --repo laura-mlg/puma --head qlty-setup-v4 --base main.\n\npuma is a Ruby HTTP server. The existing qlty.toml likely has rubocop and brakeman. Your task is to REFINE the existing configuration: add reek for code smell detection; review the rubocop configuration and add [[triage]] blocks to downgrade Style/* and Layout/* cops to monitor mode (puma uses rubocop for formatting already in CI, so Qlty should only highlight non-style issues); add [[smells]] configuration with mode = \"comment\" and sensible thresholds. Review the existing config and improve it — do not start from scratch.",
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/puma. Default branch is main. This repo already has a qlty.toml from a previous setup attempt (branch qlty-setup-v3 may exist \u2014 check with gh pr list --repo laura-mlg/puma). Create a NEW branch qlty-setup-v4. When creating the PR, use: gh pr create --repo laura-mlg/puma --head qlty-setup-v4 --base main.\n\npuma is a Ruby HTTP server. The existing qlty.toml likely has rubocop and brakeman. Your task is to REFINE the existing configuration: add reek for code smell detection; review the rubocop configuration and add [[triage]] blocks to downgrade Style/* and Layout/* cops to monitor mode (puma uses rubocop for formatting already in CI, so Qlty should only highlight non-style issues); add [[smells]] configuration with mode = \"comment\" and sensible thresholds. Review the existing config and improve it \u2014 do not start from scratch.",
       "expected_output": "PR with improved qlty.toml: existing rubocop/brakeman retained, reek added, [[triage]] for Style/Layout cops, [[smells]] configuration.",
       "files": [
         ".qlty/qlty.toml"
@@ -917,6 +917,187 @@
         "At least one [[triage]] block targets rubocop Style/* or Layout/* cops and sets them to monitor mode",
         "[[smells]] section is present with mode = \"comment\"",
         "trufflehog is enabled and set to block mode"
+      ]
+    },
+    {
+      "id": 51,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/fastapi. When creating the PR, use: gh pr create --repo laura-mlg/fastapi --head qlty-setup --base master",
+      "expected_output": "PR created with .qlty/qlty.toml for a Python project. Enables ruff (with pyproject.toml config), mypy, bandit, trufflehog, osv-scanner, markdownlint, yamllint, actionlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/fastapi",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "ruff plugin is enabled",
+        "mypy plugin is enabled (typed Python project)",
+        "bandit plugin is enabled (security scanner for Python)",
+        "trufflehog plugin is enabled and set to block mode",
+        "osv-scanner or trivy enabled (lockfiles present)",
+        "actionlint is enabled (GitHub Actions workflows present)",
+        "Ran qlty check --sample before opening the PR"
+      ]
+    },
+    {
+      "id": 52,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/express. When creating the PR, use: gh pr create --repo laura-mlg/express --head qlty-setup --base master",
+      "expected_output": "PR created with .qlty/qlty.toml for a JavaScript/Node.js project. Detects .eslintrc.yml (legacy config) and handles ESLint 9 flat config requirement. Enables eslint, trufflehog, osv-scanner, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/express",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "eslint plugin is enabled",
+        "trufflehog plugin is enabled and set to block mode",
+        "osv-scanner or trivy enabled (lockfiles present)",
+        "Ran qlty check --sample before opening the PR",
+        "Did NOT use legacy .eslintrc.yml in config_files (ESLint 9 requires flat config)"
+      ]
+    },
+    {
+      "id": 53,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/axios. When creating the PR, use: gh pr create --repo laura-mlg/axios --head qlty-setup --base v1.x",
+      "expected_output": "PR created with .qlty/qlty.toml for a TypeScript project. Enables eslint (with @typescript-eslint packages), trufflehog, osv-scanner, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/axios",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "eslint plugin is enabled",
+        "trufflehog plugin is enabled and set to block mode",
+        "osv-scanner or trivy enabled (lockfiles present)",
+        "Ran qlty check --sample before opening the PR",
+        "Did NOT enable tsc plugin"
+      ]
+    },
+    {
+      "id": 54,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/mux. When creating the PR, use: gh pr create --repo laura-mlg/mux --head qlty-setup --base main",
+      "expected_output": "PR created with .qlty/qlty.toml for a Go project. Enables golangci-lint (or gofmt), trufflehog, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/mux",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "golangci-lint or gofmt enabled (Go project)",
+        "trufflehog plugin is enabled and set to block mode",
+        "Ran qlty check --sample before opening the PR",
+        "Did NOT add both golangci-lint and gofmt"
+      ]
+    },
+    {
+      "id": 55,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/ruff. When creating the PR, use: gh pr create --repo laura-mlg/ruff --head qlty-setup --base main",
+      "expected_output": "PR created with .qlty/qlty.toml for a Rust project that also contains Python. Enables clippy, rustfmt, ruff (Python), trufflehog, markdownlint, actionlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/ruff",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "clippy plugin is enabled (Rust project)",
+        "rustfmt plugin is enabled",
+        "trufflehog plugin is enabled and set to block mode",
+        "actionlint is enabled (GitHub Actions workflows present)",
+        "Ran qlty check --sample before opening the PR"
+      ]
+    },
+    {
+      "id": 56,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/liquid. When creating the PR, use: gh pr create --repo laura-mlg/liquid --head qlty-setup --base main",
+      "expected_output": "PR created with .qlty/qlty.toml for a Ruby project. Detects rubocop config and enables rubocop, trufflehog, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/liquid",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "rubocop plugin is enabled (Ruby project with .rubocop.yml)",
+        "trufflehog plugin is enabled and set to block mode",
+        "Ran qlty check --sample before opening the PR",
+        "Did NOT enable standardrb (no .standard.yml present)"
+      ]
+    },
+    {
+      "id": 57,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/ansible-lint. When creating the PR, use: gh pr create --repo laura-mlg/ansible-lint --head qlty-setup --base main",
+      "expected_output": "PR created with .qlty/qlty.toml for a Python project with heavy YAML. Enables ruff, bandit, trufflehog, osv-scanner, yamllint, actionlint, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/ansible-lint",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "ruff plugin is enabled (Python project)",
+        "yamllint is enabled (heavy YAML presence)",
+        "actionlint is enabled (GitHub Actions workflows present)",
+        "trufflehog plugin is enabled and set to block mode",
+        "Ran qlty check --sample before opening the PR"
+      ]
+    },
+    {
+      "id": 58,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/router. When creating the PR, use: gh pr create --repo laura-mlg/router --head qlty-setup --base main",
+      "expected_output": "PR created with .qlty/qlty.toml for a TypeScript/Vue project. Enables eslint (with @typescript-eslint and vue plugin packages), trufflehog, osv-scanner, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/router",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "eslint plugin is enabled (TypeScript/Vue project)",
+        "trufflehog plugin is enabled and set to block mode",
+        "osv-scanner or trivy enabled (lockfiles present)",
+        "Ran qlty check --sample before opening the PR",
+        "Did NOT enable tsc plugin"
+      ]
+    },
+    {
+      "id": 59,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/nest. When creating the PR, use: gh pr create --repo laura-mlg/nest --head qlty-setup --base master",
+      "expected_output": "PR created with .qlty/qlty.toml for a TypeScript NestJS project. Enables eslint (with @typescript-eslint), prettier, trufflehog, osv-scanner, markdownlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/nest",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "eslint plugin is enabled",
+        "prettier plugin is enabled (.prettierrc present)",
+        "trufflehog plugin is enabled and set to block mode",
+        "osv-scanner or trivy enabled (lockfiles present)",
+        "Ran qlty check --sample before opening the PR",
+        "Did NOT enable tsc plugin"
+      ]
+    },
+    {
+      "id": 60,
+      "prompt": "IMPORTANT: This repo is a fork at laura-mlg/django. When creating the PR, use: gh pr create --repo laura-mlg/django --head qlty-setup --base main",
+      "expected_output": "PR created with .qlty/qlty.toml for a large Python project. Enables ruff (or flake8), bandit, trufflehog, markdownlint, yamllint, actionlint. Runs qlty check --sample before opening PR.",
+      "files": [
+        ".qlty/qlty.toml"
+      ],
+      "expectations": [
+        "Created a PR on laura-mlg/django",
+        "PR branch is qlty-setup",
+        ".qlty/qlty.toml is committed in the PR",
+        "ruff or flake8 plugin is enabled (Python project)",
+        "bandit plugin is enabled (security scanner)",
+        "trufflehog plugin is enabled and set to block mode",
+        "actionlint is enabled (GitHub Actions workflows present)",
+        "Ran qlty check --sample before opening the PR"
       ]
     }
   ]
