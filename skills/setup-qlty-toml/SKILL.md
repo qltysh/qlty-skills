@@ -32,11 +32,6 @@ Read any existing tool configs to understand what extensions, parsers, or plugin
 
 For npm-based tools, read `package.json` devDependencies. For Python-based tools, check `pyproject.toml` or `requirements*.txt`. These tell you what the team has already pinned.
 
-**Mutual exclusion rules** (strategic decisions not visible in plugin configs):
-- **biome** replaces eslint + prettier — if `biome.json` or `biome.jsonc` exists, do NOT add eslint or prettier
-- **standardrb** replaces rubocop — if `.standard.yml` exists, use standardrb, not rubocop
-- **golangci-lint** replaces gofmt — if `.golangci.*` exists, do NOT also add gofmt
-
 **Generated and vendored directories:**
 Look for directories likely containing generated, vendored, or third-party code: `vendor/`, `node_modules/`, `dist/`, `build/`, `target/`, `generated/`, `.yarn/`, minified files (`*.min.*`), TypeScript declaration files (`**/*.d.ts`). Also check `.gitignore`.
 
@@ -96,13 +91,7 @@ Based on detected languages and existing config files, propose a full plugin lis
 
 1. **Only propose plugins you confirmed exist** in the GitHub registry fetched in Phase 2. If a plugin name doesn't appear as a subdirectory there, don't add it — check `references/plugin-registry.md` for any known caveats on why.
 
-2. **Mutual-exclusion rules:**
-   - **biome** replaces eslint and prettier — if `biome.json`/`biome.jsonc` present, do NOT also add eslint or prettier.
-   - **standardrb** replaces rubocop — if `.standard.yml` present, use standardrb, not rubocop.
-   - **golangci-lint** replaces gofmt — if `.golangci.*` present, do NOT also add gofmt.
-   - **oxc** coexists with eslint — unlike biome, both can be enabled together.
-
-3. **Security baseline (always recommend):** `trufflehog` for secrets. `osv-scanner` or `trivy` if lockfiles present. `zizmor` if GitHub Actions workflows present.
+2. **Security baseline (always recommend):** `trufflehog` for secrets. `osv-scanner` or `trivy` if lockfiles present. `zizmor` if GitHub Actions workflows present.
 
 4. **Cross-language tools:** Recommend based on what's in the repo — `markdownlint` (`.md` files), `actionlint` + `yamllint` (`.github/workflows/`), `checkov` (Docker/Terraform/K8s), `kube-linter` (K8s manifests), `spectral` (OpenAPI specs), `vale` (prose docs).
 
