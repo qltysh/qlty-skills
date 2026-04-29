@@ -83,8 +83,6 @@ Based on detected languages and existing config files, propose a full plugin lis
 
 | Plugin | Category | Why recommended | Enabled? |
 |---|---|---|---|
-| trufflehog | Security | Secrets detection — all repos benefit | Yes |
-| eslint | Linter | TypeScript/JavaScript found | Yes |
 | ... | ... | ... | ... |
 
 **How to select plugins:**
@@ -104,18 +102,18 @@ Explain the four modes once, clearly:
 - **`monitor`**: Issues are visible on Qlty Cloud but not posted to GitHub at all. Use for noisy tools while you build trust in their signal.
 - **`disabled`**: Plugin does not run.
 
-Present your mode recommendations in a table using these defaults:
+Present your mode recommendations using these principles by plugin category:
 
-| Plugin(s) | Default mode | Reasoning |
+| Category | Default mode | Reasoning |
 |---|---|---|
-| `trufflehog`, `gitleaks` | `block` | Secrets are always urgent and high-signal — block immediately |
-| `zizmor` | `block` | GitHub Actions security issues are high value and low noise |
-| `eslint`, `rubocop`, `ruff`, `flake8`, `mypy`, `phpstan`, `golangci-lint`, `clippy`, `swiftlint`, `shellcheck`, `sqlfluff`, `spectral`, `knip`, `oxc`, `tsc`, `haml-lint`, `reek`, `brakeman`, `coffeelint`, `vale`, `ast-grep` | `comment` | Important linting feedback, non-blocking by default |
-| `prettier`, `black`, `gofmt`, `rustfmt`, `shfmt`, `ktlint`, `google-java-format`, `swiftformat`, `ruby-stree`, `standardrb`, `php-cs-fixer`, `dockerfmt`, `dotenv-linter`, `prisma`, `terraform` (format driver) | `comment` | Formatting is style, not correctness — visible but non-blocking |
-| `markdownlint`, `yamllint`, `actionlint`, `hadolint`, `editorconfig-checker` | `comment` | Config/docs quality is useful but not blocking |
-| `osv-scanner`, `trivy`, `checkov`, `semgrep`, `bandit` | `block` | Security/vulnerability scanners — high-value, low-noise; block by default |
-| `tflint` | `comment` | Terraform linter — important feedback, non-blocking |
-| `pmd`, `php-codesniffer`, `radarlint-*`, `kube-linter`, `ripgrep` | `monitor` | Can be noisy on first run — observe before enforcing |
+| Secrets detection | `block` | Always urgent and high-signal — block immediately |
+| Security scanners (vulnerabilities, IaC, CI pipeline) | `block` | High-value, low-noise — block by default |
+| Language linters | `comment` | Important feedback, non-blocking by default |
+| Formatters | `comment` | Style, not correctness — visible but non-blocking |
+| Config/docs quality (Markdown, YAML, Actions, Docker) | `comment` | Useful but not blocking |
+| Deep code quality / broad pattern scanners | `monitor` | Can be noisy on first run — observe before enforcing |
+
+For each plugin on your list, identify its category and apply the matching default. Adjust based on the plugin's README signal-to-noise guidance and the team's risk tolerance.
 
 Ask: "Do any of these feel too strict or too lenient for your team? If you're starting fresh and want to ease in gradually, we can move security scanners to `monitor`. If you want stricter enforcement, we can promote linters to `block`."
 
@@ -135,28 +133,23 @@ For npm-based plugins, also read the existing project config file (e.g. `.eslint
 **Config file references** — if a standalone config file exists, add `config_files`:
 ```toml
 [[plugin]]
-name = "eslint"
-config_files = ["eslint.config.js"]
-extra_packages = ["@typescript-eslint/eslint-plugin@8.0.0"]
-
-[[plugin]]
-name = "stylelint"
-config_files = [".stylelintrc.json"]
-extra_packages = ["stylelint-config-standard-scss@13.0.0"]
+name = "{plugin-name}"
+config_files = ["{path/to/config}"]
+extra_packages = ["{package}@{version}"]
 ```
 
-If the config is embedded in `package.json` (e.g. eslint under `"eslintConfig"`), use `package_file = "package.json"` instead of `config_files`.
+If the config is embedded in `package.json`, use `package_file = "package.json"` instead of `config_files`.
 
 **`package_file` + `package_filters`** — When the project's `package.json` (or `Gemfile`, `composer.json`) already declares all needed linter plugins, prefer referencing it over duplicating versions in `extra_packages`. Use `package_filters` to limit which packages get installed from that file:
 
 ```toml
 [[plugin]]
-name = "eslint"
+name = "{plugin-name}"
 package_file = "package.json"
-package_filters = ["eslint"]
+package_filters = ["{unscoped-package-prefix}"]
 ```
 
-**Warning: `package_filters` is a prefix filter and does NOT match scoped npm packages.** A filter of `"eslint"` will NOT match `@typescript-eslint/parser` or `@typescript-eslint/eslint-plugin` because those package names start with `@`, not `eslint`. If your eslint config requires scoped packages (`@typescript-eslint/*`, `@babel/*`, etc.), use `extra_packages` with explicit versions instead of `package_file` + `package_filters`.
+**Warning: `package_filters` is a prefix filter and does NOT match scoped npm packages** (those starting with `@`). Use `extra_packages` with explicit versions when any required package is scoped.
 
 Choose `package_file` when: the project's package manager file already lists all needed plugins and you want versions to stay in sync, AND all needed packages are unscoped (no `@scope/` prefix). Choose `extra_packages` when: the project has no package file, you need specific versions independent of the project, or any required packages are scoped npm packages.
 
@@ -166,32 +159,32 @@ Choose `package_file` when: the project's package manager file already lists all
 
 ```toml
 [[plugin]]
-name = "golangci-lint"
-version = "1.55.2"
+name = "{plugin-name}"
+version = "{x.y.z}"
 ```
 
 **`affects_cache`** — Additional files whose changes should invalidate the plugin's analysis cache. Use when a plugin reads config from files not automatically detected:
 
 ```toml
 [[plugin]]
-name = "eslint"
-affects_cache = [".eslintignore", "tsconfig.json"]
+name = "{plugin-name}"
+affects_cache = ["{config-file}"]
 ```
 
-**`skip_upstream`** — Set to `true` to skip analysis of files outside the current diff (upstream dependencies). Useful for TypeScript projects where `tsc` would otherwise type-check all imported files:
+**`skip_upstream`** — Set to `true` to skip analysis of files outside the current diff. Useful for type-checkers that would otherwise analyze all imported files:
 
 ```toml
 [[plugin]]
-name = "tsc"
+name = "{plugin-name}"
 skip_upstream = true
 ```
 
-**`.qlty/configs/` directory** — If you want to store a plugin's config file inside the `.qlty/` directory (to keep it out of the repo root), Qlty will automatically provision it during analysis. Reference it with a relative path in `config_files`:
+**`.qlty/configs/` directory** — Store a plugin's config file inside `.qlty/` to keep it out of the repo root. Qlty will automatically provision it during analysis:
 
 ```toml
 [[plugin]]
-name = "rubocop"
-config_files = [".qlty/configs/.rubocop.yml"]
+name = "{plugin-name}"
+config_files = [".qlty/configs/{config-file}"]
 ```
 
 **Plugin-specific caveats and known issues:** Check `references/plugin-registry.md` before writing any plugin block — it records Qlty-internal behaviors that the plugin README won't tell you (config file handling, version pinning requirements, plugins with known issues in the current CLI).
@@ -221,8 +214,8 @@ Based on Phase 1 findings, propose additions for directories not already covered
 For **per-plugin exclusions** (suppress one plugin on specific paths without excluding those paths from all plugins), use `[[exclude]]` blocks:
 ```toml
 [[exclude]]
-plugins = ["osv-scanner", "trufflehog"]
-file_patterns = ["**/test/fixtures/**"]
+plugins = ["{plugin-name}"]
+file_patterns = ["{glob}"]
 ```
 
 Ask: "Are there directories with generated code, third-party code you don't own, or files with intentional violations that should be excluded?"
@@ -239,53 +232,30 @@ Ask if they need additions for custom test directories (e.g., `**/e2e/**`, `**/i
 
 Explain: "Qlty has built-in maintainability analysis — separate from any linter plugin. It flags things like overly complex functions, too many parameters, deeply nested code, and duplicate logic. These are called 'smells'."
 
-Present the configurable smells:
-
-| Smell | What it flags | Default threshold |
-|---|---|---|
-| `function_complexity` | Cyclomatic complexity of a function | 15 |
-| `function_parameters` | Number of parameters in a function | 4 |
-| `return_statements` | Number of return statements in a function | 4 |
-| `file_length` | Lines in a file | 250 |
-| `nested_control_flow` | Nesting depth of if/for/while blocks | 4 |
-| `identical_code` | Copy-pasted identical code blocks | enabled |
-| `similar_code` | Structurally similar code blocks | enabled |
-
-**Disabling individual smells** — to turn off a specific check without disabling smells entirely:
+Fetch https://docs.qlty.sh/analysis-configuration for the current list of configurable smells, their field names, and default thresholds. The config supports per-smell enable/disable, duplication sensitivity tuning, and per-language threshold overrides:
 
 ```toml
-[smells.identical_code]
+[smells]
+mode = "comment"
+
+# Disable a specific smell
+[smells.{smell-name}]
 enabled = false
-```
 
-**Duplication fine-tuning** — if the default duplication sensitivity is too aggressive:
-
-```toml
+# Tune duplication sensitivity
 [smells.duplication]
-nodes_threshold = 100      # higher = less sensitive (default ~45 nodes)
-filter_patterns = ["**/migrations/**", "**/fixtures/**"]  # skip these paths for duplication only
-```
+nodes_threshold = 100
 
-**Note:** `min_duplication_lines` is NOT a valid field — use `nodes_threshold`. A "node" in the AST roughly corresponds to 1–3 lines of code, so `nodes_threshold = 100` is roughly equivalent to ~50–100 lines.
-
-**Per-language overrides** — to set different thresholds for a specific language without affecting others:
-
-```toml
-[language.python.smells]
-function_parameters.threshold = 8    # data science functions often take more params
-
-[language.java.smells]
-function_complexity.threshold = 20   # enterprise Java often has higher complexity
-
-[language.go.smells]
-function_parameters.threshold = 6    # Go error-handling patterns use more params
+# Per-language override
+[language.{lang}.smells]
+{smell-name}.threshold = {value}
 ```
 
 Ask:
 1. Do you want to enable smells? (Recommended: yes, `mode = "comment"`)
-2. Do any thresholds need adjustment for your codebase? (e.g., lower `function_parameters` to 3 for strict teams, or raise `function_complexity` to 20 for data-heavy code)
-3. Are there specific smells to disable entirely? (e.g., `identical_code` for repos with intentional duplication like migrations or fixtures)
-4. Do you want per-language overrides? (e.g., Python data science, Java enterprise, Go error-handling patterns all commonly need higher thresholds)
+2. Do any thresholds need adjustment for this codebase?
+3. Are there specific smells to disable entirely?
+4. Do you want per-language overrides?
 
 ### Decision 7: Monorepo Configuration (skip if not a monorepo)
 
@@ -297,20 +267,16 @@ Explain: "The `prefix` field on a plugin scopes it to run only within a specific
 
 ```toml
 [[plugin]]
-name = "eslint"
-prefix = "frontend"
-config_files = ["frontend/eslint.config.js"]
-
-[[plugin]]
-name = "ruff"
-prefix = "backend"
+name = "{plugin-name}"
+prefix = "{subdirectory}"
+config_files = ["{subdirectory/config-file}"]
 ```
 
 Also explain `[[exclude]]` for suppressing a plugin on specific paths:
 ```toml
 [[exclude]]
-plugins = ["tsc", "knip"]
-file_patterns = ["backend/**", "infra/**"]
+plugins = ["{plugin-name}"]
+file_patterns = ["{subdirectory}/**"]
 ```
 
 Ask: "Should any plugins be scoped to specific subdirectories? Do you want to exclude any plugins from running in specific parts of the repo?"
@@ -325,30 +291,25 @@ Ask: "Should any plugins be scoped to specific subdirectories? Do you want to ex
 - You want to recategorize findings (change `level` from warning → error, or adjust `category`)
 
 ```toml
-# Downgrade a noisy rubocop style rule to monitor-only
+# Downgrade a noisy rule to monitor-only
 [[triage]]
-plugins = ["rubocop"]
-rules = ["Style/StringLiterals"]
+plugins = ["{plugin-name}"]
+rules = ["{rule-id}"]
 set.mode = "monitor"
 
-# Promote a high-severity semgrep finding to block
+# Promote a high-severity finding to block
 [[triage]]
-plugins = ["semgrep"]
-rules = ["python.django.security.injection.sql"]
+plugins = ["{plugin-name}"]
+rules = ["{rule-id}"]
 set.mode = "block"
 set.level = "error"
 
-# Ignore no-console violations in test files only
+# Silence a rule in specific paths only
 [[triage]]
-plugins = ["eslint"]
-rules = ["no-console"]
-file_patterns = ["**/*.test.*", "**/*.spec.*"]
+plugins = ["{plugin-name}"]
+rules = ["{rule-id}"]
+file_patterns = ["**/*.test.*"]
 set.ignored = true
-
-# Downgrade all pmd findings (noisy for first-time Java setup)
-[[triage]]
-plugins = ["pmd"]
-set.mode = "monitor"
 ```
 
 **Match conditions** (all are optional, combined as AND):
@@ -454,11 +415,10 @@ This runs all enabled plugins on a random sample of real files and catches runti
 4. **If not fixable:** comment out the entire `[[plugin]]` block. Put a one-line explanation on the line immediately above `# [[plugin]]`:
 
 ```toml
-# disabled: ESLint 9 flat config required but project uses legacy .eslintrc.js — re-enable after migrating config
+# disabled: {reason} — re-enable when {condition}
 # [[plugin]]
-# name = "eslint"
-# mode = "comment"
-# config_files = [".eslintrc.js"]
+# name = "{plugin-name}"
+# mode = "{mode}"
 ```
 
 After resolving or disabling all errors, run `qlty check --sample` again and confirm it completes without any `Error` results before proceeding.
@@ -486,29 +446,21 @@ After the PR is open, print a clean summary:
 ```
 ## Qlty configuration summary
 
-Plugins enabled: 9
+Plugins enabled: N
 
-  BLOCK   trufflehog      — secrets detection (all files)
-  BLOCK   zizmor          — GitHub Actions security
-  COMMENT eslint          — JS/TS linting (extras: @typescript-eslint/eslint-plugin, eslint-plugin-react)
-  COMMENT prettier        — formatting (JS/TS/CSS/Markdown)
-  BLOCK   osv-scanner     — dependency vulnerability scanning
-  BLOCK   checkov         — infrastructure security (IaC files)
-  COMMENT markdownlint    — markdown quality
-  COMMENT yamllint        — YAML correctness
-  COMMENT actionlint      — GitHub Actions syntax
+  BLOCK   {plugin}   — {what it covers}
+  COMMENT {plugin}   — {what it covers}
+  MONITOR {plugin}   — {what it covers}
 
-Smells: enabled (comment mode), function_parameters threshold = 5
+Smells: enabled (comment mode)[, {any non-default threshold overrides}]
 
-Exclude patterns: 7 (node_modules, dist, generated, *.min.*, *.d.ts, fixtures, .yarn)
+Exclude patterns: N ({list key patterns})
 
-Disabled during local verification: 1
-  DISABLED  vale  — .vale/styles not committed; run "vale sync" and commit styles to re-enable
+Disabled during local verification: N
+  DISABLED  {plugin}  — {reason; how to re-enable}
 ```
 
-For any plugin with a non-default mode or config, add a one-line explanation:
-- "eslint is set to `comment` — it will post review comments but won't block PRs until the team is comfortable with the rules."
-- "trufflehog is set to `block` — any detected secret will fail the build."
+For each plugin, add a one-line explanation of its mode and what it covers.
 
 ---
 
@@ -537,35 +489,25 @@ After the PR merges to the default branch, Qlty Cloud will run its first full an
 When a specific line or block legitimately triggers a rule (e.g., an intentional pattern, generated code inline, or a known-safe exception), use `qlty-ignore` inline comments rather than widening `exclude_patterns` or adding `[[triage]]` rules. This is a per-occurrence surgical suppression — it does not affect other instances of the same rule.
 
 Single rule, next line:
-```python
-# qlty-ignore: ruff:E501
-long_generated_string = "..."
+```
+# qlty-ignore: {plugin}:{rule-id}
 ```
 
-Multiple rules or tools, comma-separated:
-```typescript
-// qlty-ignore: eslint:no-console, eslint:no-debugger
-console.log("intentional");
+Multiple rules, comma-separated:
+```
+# qlty-ignore: {plugin}:{rule}, {plugin}:{rule}
 ```
 
-Ignore all rules from a tool on the next line:
-```go
-// qlty-ignore: golangci-lint
-someWeirdButCorrectPattern()
+All rules from a plugin:
 ```
-
-Next-line-only (does not apply to indented block beneath it):
-```python
-# qlty-ignore>: bandit:B101
-assert condition  # only this line
+# qlty-ignore: {plugin}
 ```
 
 Region silencing (start `+`, end `-`):
-```python
-# qlty-ignore+: bandit
-eval(trusted_config_string)
-process(trusted_config_string)
-# qlty-ignore-: bandit
+```
+# qlty-ignore+: {plugin}
+...affected lines...
+# qlty-ignore-: {plugin}
 ```
 
 Tell the user: "If you encounter specific false positives after the PR merges, use `qlty-ignore` comments rather than broadening the global config — it keeps suppressions visible and local to the affected code."
