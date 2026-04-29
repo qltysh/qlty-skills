@@ -1,8 +1,10 @@
 # Known Cases
 
-Accumulated learnings from past runs. Consult this when you encounter a situation that isn't obvious from the docs or the plugin registry. Add new entries when you resolve a non-obvious case — include what you tried, what failed, and what worked.
+Caveats about **Qlty's own behavior** — things the plugin README won't tell you. Consult this before writing any plugin block.
 
-Plugin availability is always checked live from https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins. This file records **what the registry listing alone won't tell you**.
+Do NOT record plugin-specific facts here (supported versions, config syntax, package names). Those belong in the plugin's README at `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/{plugin-name}/README.md`. Record only what is specific to how Qlty runs, caches, or installs plugins — behaviors that are invisible from reading the plugin README alone.
+
+Add a new entry when you discover a non-obvious Qlty behavior. Include what failed, what worked, and when it was observed (so stale entries can be identified).
 
 ---
 

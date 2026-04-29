@@ -110,21 +110,30 @@ Produce a brief summary of findings, then move on to Phase 2.
 
 ## Phase 2: Fetch Documentation
 
-Before making decisions, fetch what you need from these sources:
+Fetch only what you need — don't read everything upfront.
 
-**Plugin availability — always check this first:**
-- https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — authoritative list of available plugins; each subdirectory name is a valid plugin name
+**1. Plugin availability (always do this first):**
+Fetch https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins to confirm which plugins exist. Each subdirectory name is a valid plugin name. Do not add a plugin you haven't confirmed here.
 
-**Config reference** (useful but may not be complete or fully up to date):
-- https://docs.qlty.sh/qlty-toml — TOML field reference
-- https://docs.qlty.sh/analysis-configuration — maintainability checks and thresholds
-- https://docs.qlty.sh/excluding-files — exclude patterns and per-plugin exclusions
-- https://docs.qlty.sh/silencing-issues — `qlty-ignore` inline comment syntax
+**2. Per-plugin README (fetch for each plugin you're about to enable):**
+Every plugin has a README at:
+```
+https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/{plugin-name}/README.md
+```
+Read it before writing the plugin block. The README is the authoritative source for:
+- What `extra_packages` or `config_files` the plugin needs
+- Valid field values (e.g. `drivers` options for `trivy`)
+- Version constraints and known limitations
+- Config file format requirements
+
+Fetch only for plugins on your proposed list — not all of them upfront.
+
+**3. qlty.toml format (fetch only if you encounter an unfamiliar field):**
+- https://docs.qlty.sh/qlty-toml — field reference
 - https://docs.qlty.sh/cli/linter-extensions — `extra_packages` vs `package_file` vs `package_filters`
 
-**For deeper config questions:** If the docs don't cover a specific plugin's options (valid fields, driver values, version constraints), check the plugin's source directly at https://github.com/qltysh/qlty — the source is always more complete than the docs.
-
-**Accumulated learnings:** Read `references/plugin-registry.md` for known cases and caveats from past runs — specific situations that aren't obvious from the docs or registry alone.
+**4. Qlty-internal behavioral caveats (always read — it's small):**
+Read `references/plugin-registry.md`. This file captures caveats about how Qlty itself behaves that you won't find in plugin READMEs — config file handling, cache behavior, cloud vs. local differences, and plugins with known issues in the current CLI version.
 
 ---
 
@@ -188,21 +197,12 @@ Ask: "Do any of these feel too strict or too lenient for your team? If you're st
 
 For plugins that require external packages or have config files the team has already written, propose the right `extra_packages`, `config_files`, and `package_file` entries.
 
-**npm-based plugins** — check devDependencies in `package.json` and the plugin config:
+**How to determine what a plugin needs:**
+You read each plugin's README in Phase 2 — use that as your source. The README specifies required packages, supported config file formats, and version constraints. Do not guess or rely on memory.
 
-| Plugin | Commonly needed `extra_packages` |
-|---|---|
-| eslint | `@typescript-eslint/parser`, `@typescript-eslint/eslint-plugin`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-plugin-import`, `eslint-plugin-jsx-a11y`, `eslint-plugin-vue`, `eslint-config-prettier`, `@next/eslint-plugin-next`, etc. |
-| stylelint | `stylelint-config-standard`, `stylelint-config-standard-scss`, `stylelint-config-sass-guidelines`, `stylelint-config-recommended`, `stylelint-order`, etc. |
-| prettier | `prettier-plugin-tailwindcss`, `prettier-plugin-svelte`, `prettier-plugin-organize-imports`, etc. |
-| markdownlint | `markdownlint-rule-*` (custom rules) |
-| spectral | `@stoplight/spectral-formats`, `@stoplight/spectral-rulesets`, etc. |
+For npm-based plugins, also read the existing project config file (e.g. `.eslintrc`, `stylelint.config.js`) to identify `extends`, `plugins`, and `parser` entries — each one maps to an npm package that needs to be in `extra_packages`.
 
-For each npm-based plugin, read the existing config file to identify all `extends`, `plugins`, and `parser` entries. Map each one to the corresponding npm package and version. Propose the `extra_packages` list.
-
-**Version pinning:** Use versions already pinned in `package.json` devDependencies wherever possible. Fall back to the latest stable version only if the package is not already in devDependencies.
-
-**`@typescript-eslint` version cap:** The scoped packages `@typescript-eslint/parser` and `@typescript-eslint/eslint-plugin` only exist up to v6.x. In v7+, the project was rebranded to the unscoped `typescript-eslint` package. Always pin to v5.x or v6.x for the scoped packages (e.g., `@typescript-eslint/parser@5.62.0` or `6.x`). Do NOT use v7+ for the `@typescript-eslint/` scoped packages.
+**Version pinning:** Use versions already pinned in `package.json` devDependencies wherever possible. Fall back to the latest stable version only if the package is not already in devDependencies. Cross-check package major versions against the plugin's bundled tool version (found in the README) — mismatches can pass locally but fail in Qlty Cloud.
 
 **IMPORTANT: Always use `config_files = ["path"]` when referencing a plugin's config file. Never use `config = "path"` — that is not a valid TOML field.**
 
@@ -260,8 +260,6 @@ name = "tsc"
 skip_upstream = true
 ```
 
-**Do not use the `tsc` plugin.** It is marked `hidden = true` in the Qlty registry with no `known_good` version — it fails config validation before running. Use `eslint` with `@typescript-eslint` for TypeScript linting instead. Also: `xo`-based projects (those with `"xo"` in devDependencies) use xo as a CLI linter wrapping eslint — do NOT add the eslint plugin for xo projects, as xo bundles its own eslint internals.
-
 **`.qlty/configs/` directory** — If you want to store a plugin's config file inside the `.qlty/` directory (to keep it out of the repo root), Qlty will automatically provision it during analysis. Reference it with a relative path in `config_files`:
 
 ```toml
@@ -270,7 +268,7 @@ name = "rubocop"
 config_files = [".qlty/configs/.rubocop.yml"]
 ```
 
-**ESLint 9 flat config required:** Qlty's eslint plugin uses ESLint 9.7.0, which only supports flat config (`eslint.config.js`). Legacy `.eslintrc.js` / `.eslintrc.*` files are silently ignored — DO NOT use legacy config in `config_files`. If pointing to a config in `.qlty/configs/`, create `eslint.config.js` (CJS format: `module.exports = [...]`). You cannot downgrade the eslint version via `extra_packages` — Qlty validates the installed version and rejects mismatches. See `references/plugin-registry.md` for a flat config example and known caveats (ESM projects, package version constraints, plugin flat-config support).
+**Plugin-specific caveats and known issues:** Check `references/plugin-registry.md` before writing any plugin block — it records Qlty-internal behaviors that the plugin README won't tell you (config file handling, version pinning requirements, plugins with known issues in the current CLI).
 
 Show each proposed entry and explain why. Ask the user to confirm or adjust package versions.
 
