@@ -23,86 +23,25 @@ Check whether `.qlty/qlty.toml` already exists:
 Gather the following. Do NOT make changes yet — just collect facts.
 
 **Languages and file types:**
-Scan the repo for all significant file extensions and note:
-- Primary source language(s)
-- Whether there are Dockerfiles, Terraform `.tf` files, YAML, SQL, OpenAPI specs
-- Whether GitHub Actions workflows exist (`.github/workflows/`)
-- Is this a monorepo? (Multiple `package.json`, `Cargo.toml`, `go.mod`, `Gemfile`, `pom.xml`, `build.gradle`, `pyproject.toml`, or similar manifest files in different subdirectories signal a monorepo)
+Scan the repo for significant file extensions and note the primary language(s), presence of Dockerfiles, Terraform, YAML, SQL, OpenAPI specs, and GitHub Actions workflows. Multiple language manifests (`package.json`, `go.mod`, `Cargo.toml`, `pyproject.toml`, etc.) in different subdirectories signal a monorepo.
 
-**Existing linter/formatter configs:**
-Search the repo for plugin-specific config files. These tell you which tools the team already uses AND whether `extra_packages`, `config_files`, or `package_file` entries are needed in the plugin block.
+**Existing tooling:**
+Scan for linter and formatter config files — any tool-specific config (`.rubocop.yml`, `pyproject.toml`, `.eslintrc*`, `biome.json`, `.golangci.yml`, etc.) tells you which tools the team already uses. To find the matching Qlty plugin for a given tool, check the plugin registry at https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — each plugin's `plugin.toml` lists the config files it recognizes.
 
-| Config file(s) | Plugin | Notes |
-|---|---|---|
-| `eslint.config.js`, `eslint.config.mjs`, `eslint.config.cjs`, `.eslintrc`, `.eslintrc.js`, `.eslintrc.json`, `.eslintrc.yml`, `.eslintrc.yaml` | eslint | Read it — detect any plugins listed (e.g. `@typescript-eslint`, `eslint-plugin-react`, `eslint-plugin-import`, `eslint-plugin-vue`) |
-| `package.json` with `"eslintConfig"` key | eslint | Use `package_file = "package.json"` |
-| `.prettierrc`, `.prettierrc.json`, `.prettierrc.json5`, `.prettierrc.yaml`, `.prettierrc.yml`, `.prettierrc.toml`, `.prettierrc.js`, `.prettierrc.cjs`, `prettier.config.js`, `prettier.config.cjs` | prettier | Read for parser plugins (e.g. `prettier-plugin-tailwindcss`, `prettier-plugin-svelte`) |
-| `biome.json`, `biome.jsonc` | biome | **EXCLUSIVE:** If `biome.json` or `biome.jsonc` exists, use ONLY biome — do NOT add eslint or prettier |
-| `.stylelintrc`, `.stylelintrc.json`, `.stylelintrc.yaml`, `.stylelintrc.yml`, `.stylelintrc.js`, `.stylelintrc.cjs`, `.stylelintrc.mjs`, `stylelint.config.js`, `stylelint.config.cjs`, `stylelint.config.mjs` | stylelint | Read for extends (e.g. `stylelint-config-standard-scss`) — those become `extra_packages` |
-| `knip.json`, `knip.jsonc`, `.knip.json`, `.knip.jsonc`, `knip.ts`, `knip.js`, `knip.config.js` | knip | Detects unused exports/dependencies in JS/TS |
-| `tsconfig.json` | tsc | TypeScript type-checking — only enable if the project compiles with `tsc` |
-| `oxlintrc.json` | oxc | Fast JS/TS linter, may coexist with eslint |
-| `.rubocop.yml`, `.rubocop_*.yml`, `.rubocop-*.yml` | rubocop | Ruby linter/formatter |
-| `.standard.yml` | standardrb | Ruby style — mutually exclusive with rubocop |
-| `.reek.yml` | reek | Ruby code smell detection |
-| `.haml-lint.yml` | haml-lint | Ruby HAML templates |
-| `ruff.toml`, `pyproject.toml` (check `[tool.ruff]`) | ruff | Python linter+formatter — replaces flake8+black for most projects |
-| `.flake8`, `setup.cfg` (check `[flake8]`) | flake8 | Python linter — don't enable both ruff and flake8 |
-| `pyproject.toml` (check `[tool.black]`), `.black` | black | Python formatter — skip if ruff handles formatting |
-| `mypy.ini`, `.mypy.ini`, `pyproject.toml` (check `[tool.mypy]`) | mypy | Python type checker |
-| `.bandit`, `pyproject.toml` (check `[tool.bandit]`) | bandit | Python security scanner |
-| `phpcs.xml`, `.phpcs.xml` | php-codesniffer | PHP style — check for custom sniffs in config |
-| `.php-cs-fixer.dist.php`, `.php-cs-fixer.php` | php-cs-fixer | PHP formatter — mutually exclusive with php-codesniffer for formatting |
-| `phpstan.neon`, `phpstan.neon.dist`, `phpstan.dist.neon` | phpstan | PHP static analysis |
-| `.golangci.yml`, `.golangci.yaml`, `.golangci.json`, `.golangci.toml` | golangci-lint | Go meta-linter — replaces standalone gofmt for many teams |
-| (no config needed) | gofmt | Go formatter — use golangci-lint instead if `.golangci.*` exists |
-| `.clippy.toml`, `clippy.toml` | clippy | Rust linter |
-| `rustfmt.toml`, `.rustfmt.toml` | rustfmt | Rust formatter |
-| `.swiftlint.yml`, `.swiftlint.yaml`, `.swiftlint` | swiftlint | Swift linter |
-| `.swiftformat` | swiftformat | Swift formatter |
-| `.hadolint.yaml`, `.hadolint.yml` | hadolint | Dockerfile linter |
-| `.shellcheckrc`, `shellcheckrc` | shellcheck | Shell script linter |
-| (no config needed) | shfmt | Shell script formatter |
-| `.markdownlint.json`, `.markdownlint.yml`, `.markdownlint.yaml` | markdownlint | Markdown linter |
-| `.yamllint`, `.yamllint.yml`, `.yamllint.yaml` | yamllint | YAML linter |
-| `.github/actionlint.yaml`, `.github/actionlint.yml` | actionlint | GitHub Actions workflow linter |
-| `.tflint.hcl` | tflint | Terraform linter |
-| (no config needed) | terraform | Terraform formatter |
-| `checkov.yml`, `.checkov.yml`, `.checkov.yaml` | checkov | IaC security scanner (Terraform, Docker, K8s, CloudFormation) |
-| `trivy.yaml`, `trivy-secret.yaml` | trivy | Container/dependency security scanner |
-| `osv-scanner.toml` | osv-scanner | Open Source Vulnerability scanner |
-| `.gitleaks.toml`, `.gitleaks.config` | gitleaks | Git history secrets scanner — alternative to trufflehog |
-| `.semgrep.yaml`, `.semgrepignore`, `.semgrep` | semgrep | Multi-language semantic code scanner |
-| `sqlfluff.cfg`, `.sqlfluff` | sqlfluff | SQL linter |
-| `.spectral.yml`, `.spectral.yaml`, `.spectral.json`, `.spectral.js` | spectral | OpenAPI/AsyncAPI spec linter |
-| `.vale.ini` | vale | Prose/documentation linter — **only enable if `.vale/styles` is committed to the repo** (see `references/plugin-registry.md`) |
-| `sgconfig.yml` | ast-grep | Structural code search/lint (language-agnostic) |
-| `.kube-linter.yaml`, `.kube-linter.yml` | kube-linter | Kubernetes manifest linter |
-| `zizmor.yml`, `.github/workflows/zizmor.yml` | zizmor | GitHub Actions security scanner (more thorough than actionlint for security). **Note: zizmor may not appear on docs.qlty.sh/plugins — it IS a supported Qlty plugin.** |
-| `coffeelint.json` | coffeelint | CoffeeScript linter |
-| `.editorconfig` | editorconfig-checker | Checks files conform to .editorconfig rules |
-| `brakeman.ignore` | brakeman | Ruby on Rails security scanner |
-| `.pmd/` or `pmd.xml` | pmd | Java/Kotlin static analysis — if using pmd standalone |
-| `radarlint.properties` | radarlint-{java,kotlin,js,python,ruby,php,go} | Deep code quality — see `references/plugin-registry.md` before adding |
-| (no config needed) | google-java-format | Java formatter |
-| (no config needed) | ktlint | Kotlin formatter/linter |
-| (no config needed) | prisma | Prisma schema formatter |
-| (no config needed) | dotenv-linter | `.env` file linter |
-| `.ripgreprc` | ripgrep | Text pattern search (custom rules via ripgrep) |
+Read any existing tool configs to understand what extensions, parsers, or plugins are in use — those typically become `extra_packages` in the plugin block.
 
-**For npm-based plugins** (`eslint`, `prettier`, `stylelint`, `markdownlint`, `biome`, `knip`, `oxc`, `tsc`, `coffeelint`, `spectral`): read the `package.json` devDependencies carefully. Any tool-specific packages (plugins, configs, parsers, extends) need to be reflected in `extra_packages` or `package_file` in the plugin block.
+For npm-based tools, read `package.json` devDependencies. For Python-based tools, check `pyproject.toml` or `requirements*.txt`. These tell you what the team has already pinned.
 
-**For Python-based plugins** (`ruff`, `flake8`, `bandit`, `mypy`, `sqlfluff`, `semgrep`, `yamllint`, `checkov`, `zizmor`): check `pyproject.toml`, `requirements.txt`, or `requirements-dev.txt` for pinned versions.
+**Mutual exclusion rules** (strategic decisions not visible in plugin configs):
+- **biome** replaces eslint + prettier — if `biome.json` or `biome.jsonc` exists, do NOT add eslint or prettier
+- **standardrb** replaces rubocop — if `.standard.yml` exists, use standardrb, not rubocop
+- **golangci-lint** replaces gofmt — if `.golangci.*` exists, do NOT also add gofmt
 
 **Generated and vendored directories:**
-Look for directories likely to contain generated, vendored, or third-party code:
-- `vendor/`, `node_modules/`, `dist/`, `build/`, `target/`, `generated/`, `protos/`, `.yarn/`
-- Any directories not committed as source (check `.gitignore`)
-- Minified files (`*.min.js`, `*-min.css`, `*.min.*`)
-- TypeScript declaration files (`**/*.d.ts`)
+Look for directories likely containing generated, vendored, or third-party code: `vendor/`, `node_modules/`, `dist/`, `build/`, `target/`, `generated/`, `.yarn/`, minified files (`*.min.*`), TypeScript declaration files (`**/*.d.ts`). Also check `.gitignore`.
 
 **CI configuration:**
-Check `.github/workflows/` or other CI config. Note whether `qlty check` is already wired into CI.
+Check `.github/workflows/` and note whether `qlty check` is already in CI.
 
 Produce a brief summary of findings, then move on to Phase 2.
 
