@@ -91,9 +91,7 @@ Based on detected languages and existing config files, propose a full plugin lis
 
 1. **Only propose plugins you confirmed exist** in the GitHub registry fetched in Phase 2. If a plugin name doesn't appear as a subdirectory there, don't add it — check `references/plugin-registry.md` for any known caveats on why.
 
-2. **Security baseline (always recommend):** `trufflehog` for secrets. `osv-scanner` or `trivy` if lockfiles present. `zizmor` if GitHub Actions workflows present.
-
-4. **Cross-language tools:** Recommend based on what's in the repo — `markdownlint` (`.md` files), `actionlint` + `yamllint` (`.github/workflows/`), `checkov` (Docker/Terraform/K8s), `kube-linter` (K8s manifests), `spectral` (OpenAPI specs), `vale` (prose docs).
+2. **Coverage categories to consider:** language linters, formatters, security scanners (secrets, dependency vulnerabilities, IaC, CI pipeline), and cross-language tools matching what's in the repo (Markdown, YAML, GitHub Actions, Docker, OpenAPI, etc.). For each category, find the relevant plugins in the registry and check their READMEs to confirm they apply.
 
 Ask the user to confirm the list or add/remove plugins before proceeding.
 
