@@ -57,7 +57,7 @@ Search the repo for plugin-specific config files. These tell you which tools the
 | `.golangci.yml`, `.golangci.yaml`, `.golangci.json`, `.golangci.toml` | golangci-lint | Go meta-linter — replaces standalone gofmt for many teams |
 | (no config needed) | gofmt | Go formatter — use golangci-lint instead if `.golangci.*` exists |
 | `.clippy.toml`, `clippy.toml` | clippy | Rust linter |
-| `rustfmt.toml`, `.rustfmt.toml` | rustfmt | Rust formatter |
+| `rustfmt.toml`, `.rustfmt.toml` | rustfmt | Rust formatter — **if `rustfmt.toml` contains `style_edition = "2024"`, comment out the rustfmt plugin** — Qlty's bundled rustfmt 1.77.2 doesn't support that option and will error |
 | `.swiftlint.yml`, `.swiftlint.yaml`, `.swiftlint` | swiftlint | Swift linter |
 | `.swiftformat` | swiftformat | Swift formatter |
 | `.hadolint.yaml`, `.hadolint.yml` | hadolint | Dockerfile linter |
@@ -272,7 +272,11 @@ config_files = [".qlty/configs/.rubocop.yml"]
 
 **ESLint 9 flat config required:** Qlty's eslint plugin uses ESLint 9.7.0, which only supports flat config (`eslint.config.js`). Legacy `.eslintrc.js` / `.eslintrc.*` files are silently ignored — DO NOT use legacy config in `config_files`. If pointing to a config in `.qlty/configs/`, create `eslint.config.js` (CJS format: `module.exports = [...]`). You cannot downgrade the eslint version via `extra_packages` — Qlty validates the installed version and rejects mismatches. See `references/plugin-registry.md` for a flat config example with `@typescript-eslint`.
 
-**Warning for ESM projects:** If the project has `"type": "module"` in `package.json`, use `eslint.config.mjs` (with `export default [...]`) in `.qlty/configs/` — not `.js`.
+**ESM projects — always use CJS syntax in the qlty eslint config:** Qlty copies config files to its cache as `.js` regardless of the source extension. An `eslint.config.mjs` with ESM `import` syntax gets renamed to `.js` in the cache and fails with `SyntaxError: Cannot use import statement outside a module`. Always write `eslint.config.js` with CJS syntax (`const x = require(...); module.exports = [...]`) in `.qlty/configs/`, even if the project has `"type": "module"` in `package.json`.
+
+**`@eslint/js` version must match ESLint 9.7.0:** When adding `@eslint/js` to `extra_packages`, always use the 9.x line (e.g. `@eslint/js@9.7.0`). Using `@eslint/js@10.x` (the ESLint 10 version) is incompatible with Qlty's bundled ESLint 9.7.0 — the local `qlty check --sample` may pass due to npm caching but the cloud build will error.
+
+**`eslint-plugin-react` flat config API requires v7.33+:** If the flat config references `react.configs.flat.recommended`, the plugin version must be ≥ 7.33.0. Versions ≤ 7.32.x lack the `.flat` property and throw `TypeError: Cannot read properties of undefined (reading 'recommended')`. Pin to `eslint-plugin-react@7.37.5` or later.
 
 Show each proposed entry and explain why. Ask the user to confirm or adjust package versions.
 
@@ -540,6 +544,8 @@ This runs all enabled plugins on a random sample of real files and catches runti
 ```
 
 After resolving or disabling all errors, run `qlty check --sample` again and confirm it completes without any `Error` results before proceeding.
+
+**`qlty check --sample` does not catch all cloud-specific failures.** Package version conflicts in `extra_packages` are one known gap: when a package version is incompatible with Qlty's bundled tool, npm may resolve a fallback locally while the cloud uses a stricter fresh install. After writing `extra_packages`, cross-check each package's major version against the bundled tool's version (ESLint 9.7.0 → use `@eslint/js@9.x`; ESLint 9.7.0 → `eslint-plugin-*` must support ESLint 9 flat config).
 
 **Do not open the PR while any plugin is in an error state.** An erroring plugin causes "Build errored" for the entire Qlty Cloud build — blocking all PR feedback, not just the failing plugin.
 

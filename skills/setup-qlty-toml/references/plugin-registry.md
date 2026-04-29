@@ -94,3 +94,109 @@ The path '/path/to/repo/.vale/styles' does not exist.
 **Only enable vale if `.vale/styles` is committed to the repo** (or if the CI runs `vale sync` before the Qlty check). Most repos do not commit the styles directory — skip vale unless you can confirm styles are available.
 
 *Confirmed 2026-04-17*
+---
+
+## `trivy` — pin version explicitly to avoid 404 on `known_good` resolution
+
+When Qlty resolves `trivy` at `known_good`, it may attempt to download an older cached version (e.g. `0.67.2`) that no longer exists on GitHub Releases, producing:
+
+```
+Error installing trivy@0.67.2.
+https://api.github.com/repos/aquasecurity/trivy/releases/tags/0.67.2: status code 404
+```
+
+**Fix:** Always pin `trivy` to the explicit version listed in the plugin.toml `known_good_version` field (e.g. `version = "0.69.2"`). Check the current value at https://github.com/qltysh/qlty/blob/main/qlty-plugins/plugins/linters/trivy/plugin.toml before setting.
+
+*First seen: express eval (2026-04-23)*
+
+---
+
+## `mypy` — fails when `pyproject.toml` has `plugins = ["pydantic.mypy"]`
+
+Qlty runs `mypy` in an isolated venv that does not include the project's runtime dependencies. If `pyproject.toml` (or `mypy.ini`) declares `plugins = ["pydantic.mypy"]`, mypy will fail with:
+
+```
+pyproject.toml:1:1: error: Error importing plugin "pydantic.mypy": No module named 'pydantic'  [misc]
+```
+
+Exit code is 2, which qlty reports as an Error.
+
+**Fix:** Comment out the mypy plugin block with a note. The issue would require installing pydantic (and other project deps) into the qlty mypy venv, which is not currently possible via config alone.
+
+*First seen: fastapi eval (2026-04-23)*
+
+---
+
+## `trivy` — `fs-vuln` IS a valid driver (contradicts earlier entry)
+
+The plugin.toml at https://github.com/qltysh/qlty/blob/main/qlty-plugins/plugins/linters/trivy/plugin.toml defines three drivers: `fs-vuln`, `fs-secret`, and `config`. **`vuln` and `secret` are NOT valid driver names.** The earlier entry saying `"fs-vuln" is NOT valid` was incorrect — `fs-vuln` is the correct driver for lockfile vulnerability scanning. `qlty init` emitting `"fs-vuln"` is actually correct. The earlier guidance to strip it was wrong.
+
+**Summary of valid trivy driver values:** `"config"`, `"fs-vuln"`, `"fs-secret"`
+
+*Corrected 2026-04-23 (mux eval)*
+
+---
+
+## `editorconfig-checker` — not found in local qlty plugin registry (v0.610.0)
+
+`editorconfig-checker` appears in the GitHub plugin registry (https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins/linters/editorconfig-checker) but causes an immediate `Plugin definition not found for editorconfig-checker` error when included in `qlty.toml` with qlty CLI v0.610.0. The plugin definition exists in source but is not available in this CLI version's bundled registry.
+
+**Fix:** Comment out the `editorconfig-checker` block. Check again if the CLI is upgraded.
+
+*First seen: mux eval (2026-04-23)*
+
+---
+
+## `rustfmt` — fails on Rust workspace crates with `mod` declarations
+
+When qlty runs `rustfmt` on individual files from a Rust workspace, it fails with:
+
+```
+Error writing files: failed to resolve mod `<name>`: /path/to/tmp/crates/.../src/submodule.rs does not exist
+```
+
+This happens because `rustfmt` needs to resolve sibling module files (`mod pool;` etc.) relative to the file being formatted, but qlty runs it in a temp directory with only the target files copied. Projects with `mod` declarations in large workspaces (like ruff/astral-sh) will hit this on nearly every Rust file.
+
+Additionally, `rustfmt.toml` options like `style_edition = "2024"` require a recent nightly/stable version; qlty's bundled rustfmt (1.77.2 as of v0.610.0) does not support them.
+
+**Fix:** Comment out the `rustfmt` plugin for Rust workspaces. The plugin works for simple single-file crates but is unreliable for large multi-crate workspaces.
+
+*First seen: ruff/laura-mlg eval (2026-04-23)*
+
+---
+
+## `eslint-plugin-react` — v7.33+ required for flat config (`.configs.flat` API)
+
+The `eslint-plugin-react` package only added the flat config API (`.configs.flat.recommended`, `.configs.flat["jsx-runtime"]`) in v7.33.0. Using v7.31.x or earlier with a flat config file that calls `react.configs.flat.recommended` will fail with:
+
+```
+TypeError: Cannot read properties of undefined (reading 'recommended')
+```
+
+**Fix:** Use `eslint-plugin-react@7.37.5` (latest as of 2026-04-23) or at minimum `7.33.0` in `extra_packages` when the project's ESLint flat config uses the flat config API.
+
+*First seen: ruff/laura-mlg eval (2026-04-23)*
+
+---
+
+## `eslint` — `@eslint/js` version must match ESLint 9.7.0
+
+When adding `@eslint/js` to `extra_packages`, use the **9.x** line (e.g. `@eslint/js@9.7.0`). Using `@eslint/js@10.x` (the ESLint 10 version) causes a cloud build error despite passing `qlty check --sample` locally. The local pass is a false negative — npm resolves a cached fallback, but the cloud uses a fresh install environment that rejects the version mismatch.
+
+**Fix:** `extra_packages = ["@eslint/js@9.7.0", ...]`
+
+*First seen: axios eval (2026-04-29)*
+
+---
+
+## `eslint` — Always use CJS syntax in `.qlty/configs/eslint.config.js` (even for ESM projects)
+
+Qlty copies config files to its cache as `.js` regardless of the source file extension. An `eslint.config.mjs` with ESM `import` syntax gets renamed to `eslint.config.js` in the cache and fails with:
+
+```
+SyntaxError: Cannot use import statement outside a module
+```
+
+**Rule:** Always write `eslint.config.js` (CJS format: `const x = require(...); module.exports = [...]`) in `.qlty/configs/`. This applies even if the project has `"type": "module"` in `package.json` — Qlty's ESLint runtime is a CJS process independent of the project's module type. Never use ESM `import`/`export` in the qlty eslint config file.
+
+*Confirmed: axios eval (2026-04-29) — .mjs was stripped to .js and caused local failure after cache bust*
