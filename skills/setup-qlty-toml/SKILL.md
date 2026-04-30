@@ -13,9 +13,10 @@ You are a senior software engineer configuring Qlty static analysis for this rep
 
 ## Phase 1: Analyze the Repository
 
-**Check Qlty state:** Does `.qlty/qlty.toml` already exist?
-- No → run `qlty init` to generate a baseline, then proceed
-- Yes → read it carefully; you are refining, not replacing
+**Check Qlty state — this determines your mode for the entire run:**
+
+- **No `.qlty/qlty.toml`** → run `qlty init` to generate the baseline. Plugin selection is `qlty init`'s job — do not second-guess which plugins it enables. Your job is to fine-tune the generated config (Phases 2–4).
+- **Existing `.qlty/qlty.toml`** → read it carefully. You are refining, not replacing. After fine-tuning, scan for plugins that are clearly absent but strongly signaled by the repo (e.g., a `.golangci.yml` with no `golangci-lint` block). Surface at most 2–3 recommendations in the PR description — do not add them automatically.
 
 **Catalog the repo:**
 - Languages and file types: primary language(s), Dockerfiles, Terraform, YAML, SQL, OpenAPI, GitHub Actions
@@ -48,19 +49,13 @@ Fetch only what you need — do not read everything upfront.
 
 ---
 
-## Phase 3: Configuration Decisions
+## Phase 3: Fine-Tuning Decisions
 
-For each decision: explain the tradeoff, state your recommendation, and ask the user to confirm before writing anything. Group related decisions into one message to reduce back-and-forth.
+Make all decisions autonomously based on what you learn from the repo, its existing tool configs, plugin READMEs, and Qlty docs. Do not ask for confirmation — apply your best judgment and let the PR be the review surface. Only stop to ask if you encounter a genuine blocker that cannot be resolved without human input (e.g., conflicting configs with no clear winner, missing credentials).
 
-**If running autonomously:** apply all recommended defaults and proceed without asking.
+### Decision 1: Plugin Modes
 
-### Decision 1: Plugin Selection
-
-Propose a plugin list organized by category (language linters, formatters, secrets, security scanners, cross-language tools). Present as a table with why each is recommended. Only propose plugins confirmed in the registry.
-
-### Decision 2: Plugin Modes
-
-Explain the four modes (block / comment / monitor / disabled). Default by category:
+Assign a mode to each plugin based on its category:
 
 | Category | Default |
 |---|---|
@@ -71,7 +66,7 @@ Explain the four modes (block / comment / monitor / disabled). Default by catego
 | Config/docs quality (Markdown, YAML, Actions, Docker) | `comment` |
 | Deep quality / broad pattern scanners | `monitor` |
 
-### Decision 3: Extra Packages and Config Files
+### Decision 2: Extra Packages and Config Files
 
 Use each plugin's README (fetched in Phase 2) as the authoritative source — do not guess. Key rules:
 
@@ -81,23 +76,23 @@ Use each plugin's README (fetched in Phase 2) as the authoritative source — do
 - Store plugin-specific configs in `.qlty/configs/` to keep them out of the repo root
 - Check `references/plugin-registry.md` before writing any plugin block
 
-### Decision 4: Exclude Patterns
+### Decision 3: Exclude Patterns
 
 Propose additions to `exclude_patterns` for generated, vendored, minified, or fixture directories not already covered. Avoid broad excludes like `**/config/**` or `**/templates/**` — those names appear in real source code. For per-plugin path suppression use `[[exclude]]` blocks.
 
-### Decision 5: Test Patterns
+### Decision 4: Test Patterns
 
 Confirm or extend `test_patterns` for any custom test directories not covered by the defaults.
 
-### Decision 6: Code Smells
+### Decision 5: Code Smells
 
-Qlty has built-in maintainability analysis independent of any linter. Fetch https://docs.qlty.sh/analysis-configuration for the current smell fields, defaults, and threshold options. Recommend enabling at `mode = "comment"`. Ask whether any thresholds need tuning for this codebase.
+Qlty has built-in maintainability analysis independent of any linter. Fetch https://docs.qlty.sh/analysis-configuration for the current smell fields, defaults, and threshold options. Enable at `mode = "comment"` and adjust thresholds based on the repo's language and codebase size.
 
-### Decision 7: Monorepo Scoping (skip if not a monorepo)
+### Decision 6: Monorepo Scoping (skip if not a monorepo)
 
 Use `prefix` on a plugin block to scope it to a subdirectory only when different subdirectories have different language stacks. Same-language workspaces (Cargo workspace, Lerna monorepo) do not need `prefix`.
 
-### Decision 8: Triage Rules (skip if not needed)
+### Decision 7: Triage Rules (skip if not needed)
 
 `[[triage]]` blocks let you override mode, level, or silencing for specific rules without changing the entire plugin's mode. Use when a single rule is too noisy or needs promotion. Prefer `set.mode` over `set.ignored` (more consistent across Qlty versions). Avoid `set.category` — may cause "Build errored".
 
