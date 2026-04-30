@@ -49,52 +49,52 @@ Fetch only what you need — do not read everything upfront.
 
 ---
 
-## Phase 3: Fine-Tuning Decisions
+## Phase 3: Fine-Tuning
 
-Make all decisions autonomously based on what you learn from the repo, its existing tool configs, plugin READMEs, and Qlty docs. Do not ask for confirmation — apply your best judgment and let the PR be the review surface. Only stop to ask if you encounter a genuine blocker that cannot be resolved without human input (e.g., conflicting configs with no clear winner, missing credentials).
+Before writing the config, send the user **one compact prompt** with all tunable decisions. Present fixed options and a clear default for each. Do not explain each option at length — the options speak for themselves.
 
-### Decision 1: Plugin Modes
+**If running autonomously** (eval or non-interactive context): skip the prompt entirely and apply all defaults.
 
-Assign a mode to each plugin based on its category:
+### Prompt template
 
-| Category | Default |
-|---|---|
-| Secrets detection | `block` |
-| Security scanners (vulns, IaC, CI pipeline) | `block` |
-| Language linters | `comment` |
-| Formatters | `comment` |
-| Config/docs quality (Markdown, YAML, Actions, Docker) | `comment` |
-| Deep quality / broad pattern scanners | `monitor` |
+Populate the plugin names from Phase 1 findings, then send this as a single message:
 
-### Decision 2: Extra Packages and Config Files
+```
+Here are the key configuration choices for this repo. Reply with any changes or just say "all defaults" to proceed.
+You can always fine-tune any of these later by updating qlty.toml.
 
-Use each plugin's README (fetched in Phase 2) as the authoritative source — do not guess. Key rules:
+Security scanners ({e.g. trivy, osv-scanner, trufflehog}):
+  block (recommended) / comment / monitor
 
-- Always `config_files = ["path"]`, never `config = "path"`
-- Pin versions already in `package.json` devDependencies where possible; cross-check major versions against the plugin's bundled tool version
-- `package_filters` is a prefix filter — does NOT match scoped npm packages (`@scope/pkg`); use `extra_packages` with explicit versions for those
-- Store plugin-specific configs in `.qlty/configs/` to keep them out of the repo root
-- Check `references/plugin-registry.md` before writing any plugin block
+Language linters ({e.g. eslint, golangci-lint, rubocop}):
+  comment (recommended) / block / monitor
 
-### Decision 3: Exclude Patterns
+Code smells & complexity:
+  enable in comment mode (recommended) / enable in monitor mode / disable
 
-Propose additions to `exclude_patterns` for generated, vendored, minified, or fixture directories not already covered. Avoid broad excludes like `**/config/**` or `**/templates/**` — those names appear in real source code. For per-plugin path suppression use `[[exclude]]` blocks.
+Complexity thresholds:
+  default (recommended) / strict / relaxed
 
-### Decision 4: Test Patterns
+Monorepo scoping (different language stacks per subdirectory):
+  yes / no (recommended)
+```
 
-Confirm or extend `test_patterns` for any custom test directories not covered by the defaults.
+Apply the user's choices (or defaults) and proceed directly to Phase 4 — no further confirmation needed.
 
-### Decision 5: Code Smells
+### What each choice controls
 
-Qlty has built-in maintainability analysis independent of any linter. Fetch https://docs.qlty.sh/analysis-configuration for the current smell fields, defaults, and threshold options. Enable at `mode = "comment"` and adjust thresholds based on the repo's language and codebase size.
+- **Security scanners** → mode applied to secrets, vulnerability, IaC, and CI pipeline plugins
+- **Language linters** → mode applied to language-specific linters (not formatters)
+- **Code smells** → enables Qlty's built-in maintainability analysis; fetch https://docs.qlty.sh/analysis-configuration for threshold fields. "Strict" tightens thresholds by ~30%; "relaxed" loosens them
+- **Monorepo scoping** → if yes, use `prefix` to scope plugins to subdirectories with different language stacks; same-language workspaces do not need it
 
-### Decision 6: Monorepo Scoping (skip if not a monorepo)
+### Always apply autonomously (not in the prompt)
 
-Use `prefix` on a plugin block to scope it to a subdirectory only when different subdirectories have different language stacks. Same-language workspaces (Cargo workspace, Lerna monorepo) do not need `prefix`.
-
-### Decision 7: Triage Rules (skip if not needed)
-
-`[[triage]]` blocks let you override mode, level, or silencing for specific rules without changing the entire plugin's mode. Use when a single rule is too noisy or needs promotion. Prefer `set.mode` over `set.ignored` (more consistent across Qlty versions). Avoid `set.category` — may cause "Build errored".
+- **Formatters**: always `comment`
+- **Extra packages and config files**: use each plugin's README as source; pin versions from existing `package.json` devDependencies where possible; use `extra_packages` (not `package_filters`) for scoped npm packages (`@scope/pkg`)
+- **Exclude patterns**: add exclusions for generated, vendored, minified, and fixture directories found in Phase 1; avoid broad names like `**/config/**`
+- **Test patterns**: extend defaults for any custom test directories found in Phase 1
+- **Triage rules**: skip on first run unless a plugin is clearly too noisy based on its README signal-to-noise guidance
 
 ---
 
