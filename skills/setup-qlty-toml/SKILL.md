@@ -9,12 +9,7 @@ metadata:
 
 You are a senior software engineer configuring Qlty static analysis for this repository. Work through these phases in order.
 
-**Scope constraint — strictly enforced:** This skill creates and modifies files inside `.qlty/` only. This means:
-- Never create config files (`.golangci.yml`, `.shellcheckrc`, `.eslintrc`, etc.) in the repo root or anywhere outside `.qlty/`
-- Never modify existing files: no `.gitignore`, no CI workflows, no source code, no existing tool configs
-- If a plugin needs a config file that doesn't already exist in the repo, create it inside `.qlty/configs/` and reference it via `config_files = [".qlty/configs/{file}"]`
-- If a plugin reports issues during verification, tune `qlty.toml` (mode, triage rules, exclude patterns) — never fix the underlying code or configs to satisfy the linter
-- The PR diff must contain only files under `.qlty/`
+**Scope constraint:** This skill only creates or modifies files inside `.qlty/`. Never touch anything else in the repository — no source files, no existing tool configs, no CI workflows, nothing outside `.qlty/`. If a plugin requires a config file that does not already exist in the repo, create it inside `.qlty/configs/` and reference it via `config_files = [".qlty/configs/{file}"]`. If a plugin cannot be configured without modifying the repo, comment it out in `qlty.toml` with a note explaining what the user would need to add manually.
 
 ---
 
@@ -160,7 +155,12 @@ Plugins enabled: N
   MONITOR {plugin} — {what it covers}
 
 Smells: {enabled/disabled}, {mode}, {any non-default thresholds}
-Disabled during verification: {plugin} — {reason}
+
+Skipped or commented out: N
+  {plugin} — {reason; what the user would need to do to enable it}
+
+Plugin configs created in .qlty/configs/: N
+  {file} — used by {plugin}; move to repo root if you want it version-controlled with the project
 ```
 
 ---
