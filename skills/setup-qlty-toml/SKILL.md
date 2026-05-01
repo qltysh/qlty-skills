@@ -9,6 +9,8 @@ metadata:
 
 You are a senior software engineer configuring Qlty static analysis for this repository. Work through these phases in order.
 
+**Scope constraint:** This skill creates and modifies files inside `.qlty/` only. Never edit, reformat, or fix any other file in the repository — not source code, not existing configs, not CI workflows. If a plugin reports issues, the response is to tune the qlty.toml (adjust mode, add triage rules, add exclude patterns) — never to fix the underlying code or configs to satisfy the linter.
+
 ---
 
 ## Phase 1: Analyze the Repository
@@ -137,6 +139,7 @@ Catches runtime crashes that TOML syntax validation misses. For each plugin that
 ### 3. Open PR
 
 - Branch: `qlty-setup`
+- Commit only files inside `.qlty/` — never include changes to source code, existing configs, or CI workflows
 - PR description: every plugin enabled with its mode, any `extra_packages` and why, any plugins disabled during verification and why, any manual steps needed
 
 ### 4. Update `references/plugin-registry.md` if you learned something new
