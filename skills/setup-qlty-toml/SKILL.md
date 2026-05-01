@@ -57,29 +57,33 @@ Before writing the config, send the user **one compact prompt** with all tunable
 
 ### Prompt template
 
-Populate the plugin names from Phase 1 findings, then send this as a single message:
+Use the `AskUserQuestion` tool to present all choices as interactive buttons in a single call (up to 4 questions). Populate plugin names from Phase 1 findings. Always put the recommended option first and append "(Recommended)" to its label.
 
-```
-Here are the key configuration choices for this repo. Reply with any changes or just say "all defaults" to proceed.
-You can always fine-tune any of these later by updating qlty.toml.
+Questions to ask:
 
-Security scanners ({e.g. trivy, osv-scanner, trufflehog}):
-  block (recommended) / comment / monitor
+1. **Security scanners** (`{trivy, osv-scanner, trufflehog, …}`)
+   - Block — fails the Quality Gate (Recommended)
+   - Comment — posts a review comment, non-blocking
+   - Monitor — visible on Qlty Cloud only
 
-Language linters ({e.g. eslint, golangci-lint, rubocop}):
-  comment (recommended) / block / monitor
+2. **Language linters** (`{eslint, golangci-lint, rubocop, …}`)
+   - Comment — review feedback, non-blocking (Recommended)
+   - Block — fails the Quality Gate
+   - Monitor — visible on Qlty Cloud only
 
-Code smells & complexity:
-  enable in comment mode (recommended) / enable in monitor mode / disable
+3. **Code smells & complexity**
+   - Enable in comment mode (Recommended)
+   - Enable in monitor mode
+   - Disable
 
-Complexity thresholds:
-  default (recommended) / strict / relaxed
+4. **Complexity thresholds**
+   - Default (Recommended)
+   - Strict — tighten thresholds ~30%
+   - Relaxed — loosen thresholds ~30%
 
-Monorepo scoping (different language stacks per subdirectory):
-  yes / no (recommended)
-```
+Add a note in the question descriptions: "You can always fine-tune these later by updating qlty.toml."
 
-Apply the user's choices (or defaults) and proceed directly to Phase 4 — no further confirmation needed.
+Apply the user's choices (or defaults if they dismiss) and proceed directly to Phase 4 — no further confirmation needed.
 
 ### What each choice controls
 
