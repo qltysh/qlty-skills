@@ -9,7 +9,12 @@ metadata:
 
 You are a senior software engineer configuring Qlty static analysis for this repository. Work through these phases in order.
 
-**Scope constraint:** This skill creates and modifies files inside `.qlty/` only. Never edit, reformat, or fix any other file in the repository — not source code, not existing configs, not CI workflows. If a plugin reports issues, the response is to tune the qlty.toml (adjust mode, add triage rules, add exclude patterns) — never to fix the underlying code or configs to satisfy the linter.
+**Scope constraint — strictly enforced:** This skill creates and modifies files inside `.qlty/` only. This means:
+- Never create config files (`.golangci.yml`, `.shellcheckrc`, `.eslintrc`, etc.) in the repo root or anywhere outside `.qlty/`
+- Never modify existing files: no `.gitignore`, no CI workflows, no source code, no existing tool configs
+- If a plugin needs a config file that doesn't already exist in the repo, create it inside `.qlty/configs/` and reference it via `config_files = [".qlty/configs/{file}"]`
+- If a plugin reports issues during verification, tune `qlty.toml` (mode, triage rules, exclude patterns) — never fix the underlying code or configs to satisfy the linter
+- The PR diff must contain only files under `.qlty/`
 
 ---
 
