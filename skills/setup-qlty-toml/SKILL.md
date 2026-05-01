@@ -34,21 +34,29 @@ Produce a brief summary of findings before moving on.
 
 Fetch only what you need — do not read everything upfront.
 
-1. **Plugin availability** (always): https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins — each subdirectory is a valid plugin name. Do not add a plugin not listed here.
+**Primary source of truth — the Qlty plugin directory:**
+`https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins`
 
-2. **Qlty plugin README** (fetch for each plugin you're about to enable):
+Each plugin subdirectory contains two files to fetch:
+
+1. **`plugin.toml`** (fetch for every plugin you're enabling):
+   `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/{plugin-name}/plugin.toml`
+   The ultimate config reference: `known_good_version` (pin this as the `version`), valid `drivers` values, which `config_files` the plugin auto-detects, required `extra_packages`, `affects_cache` files. Always start here — it's the ground truth for Qlty integration.
+
+2. **`README.md`** (fetch for every plugin you're enabling):
    `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/{plugin-name}/README.md`
-   Authoritative source for how Qlty runs this plugin: `extra_packages`, `config_files`, valid field values (`drivers`, etc.), version constraints, and Qlty-specific config requirements.
+   How the plugin behaves in Qlty specifically: known issues, version notes, usage examples, and caveats that don't fit in plugin.toml.
 
-3. **Plugin source repo README** (fetch when you need to understand the tool itself):
-   Find the upstream repo URL in the plugin's `plugin.toml` (`homepage` or `releases_url` field). Read it to understand the tool's config file format, available rules, parsers, and extensions — use this when writing or validating a config file for the plugin (e.g., what `extends` are valid in `.eslintrc`, what linters are available in `.golangci.yml`).
+**Secondary sources — fetch only when needed:**
 
-4. **qlty.toml field reference** (fetch only if you encounter an unfamiliar field):
+3. **Plugin source repo README**: Find the upstream repo URL in `plugin.toml` (`homepage` field). Fetch when you need to understand the tool itself — config file format, available rules, parsers, extensions. Use this when writing or validating a plugin's config file (e.g., what `extends` are valid in `.eslintrc`, what linters are available in `.golangci.yml`).
+
+4. **qlty.toml field reference** (only if you encounter an unfamiliar field):
    - https://docs.qlty.sh/qlty-toml
    - https://docs.qlty.sh/cli/linter-extensions
 
 5. **Qlty-internal behavioral caveats** (always read — it's small): `references/plugin-registry.md`
-   Captures non-obvious Qlty behaviors not in plugin READMEs: config file handling, cache quirks, cloud vs. local differences, plugins with known issues in the current CLI.
+   Caveats about Qlty's own behavior that aren't in plugin.toml or READMEs: cache quirks, cloud vs. local differences, plugins with known issues in the current CLI version.
 
 ---
 
