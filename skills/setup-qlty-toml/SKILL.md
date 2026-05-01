@@ -44,14 +44,14 @@ Produce a brief summary of findings before moving on.
 Fetch only what you need — do not read everything upfront.
 
 **Primary source of truth — the Qlty plugin directory:**
-`https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins`
+`https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins/linters`
 
 Each plugin subdirectory contains two files to fetch for every plugin you're enabling:
 
-1. **`plugin.toml`**: `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/{plugin-name}/plugin.toml`
+1. **`plugin.toml`**: `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/linters/{plugin-name}/plugin.toml`
    Ground truth for Qlty integration: known good version, valid driver values, auto-detected config files, required packages, cache invalidation files.
 
-2. **`README.md`**: `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/{plugin-name}/README.md`
+2. **`README.md`**: `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/linters/{plugin-name}/README.md`
    How the plugin behaves in Qlty: known issues, version notes, usage examples, caveats.
 
 **Secondary sources — fetch only when needed:**
