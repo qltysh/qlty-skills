@@ -43,10 +43,10 @@ Produce a brief summary of findings before moving on.
 
 Fetch only what you need — do not read everything upfront.
 
-**Primary source of truth — the Qlty plugin directory:**
-`https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins/linters`
+**Primary source of truth — the Qlty plugins repo:**
+`https://github.com/qltysh/qlty/tree/main/qlty-plugins/plugins`
 
-Each plugin subdirectory contains two files to fetch for every plugin you're enabling:
+Each individual linter lives under `linters/{plugin-name}/`. Fetch these two files for every plugin you're enabling:
 
 1. **`plugin.toml`**: `https://raw.githubusercontent.com/qltysh/qlty/main/qlty-plugins/plugins/linters/{plugin-name}/plugin.toml`
    Ground truth for Qlty integration: known good version, valid driver values, auto-detected config files, required packages, cache invalidation files.
@@ -59,8 +59,6 @@ Each plugin subdirectory contains two files to fetch for every plugin you're ena
 3. **Plugin source repo README**: upstream URL is in `plugin.toml` (`homepage` field). Fetch when you need to understand the tool's own config format, available rules, parsers, or extensions.
 
 4. **qlty.toml field reference**: https://docs.qlty.sh/cli/qlty-toml.md
-
-5. **Qlty-internal behavioral caveats** (always read — it's small): `references/plugin-registry.md`
 
 ---
 
@@ -132,11 +130,7 @@ Catches runtime crashes that TOML syntax validation misses. For each plugin that
 - Commit only files inside `.qlty/`
 - PR description: every plugin enabled with its mode, any plugins disabled during verification and why, any manual steps needed
 
-### 4. Update `references/plugin-registry.md` if you learned something new
-
-If a plugin is missing from the public registry, causes a build error, or has a caveat not already recorded, add it inline — do not wait for a separate evolve run.
-
-### 5. Print a configuration rundown
+### 4. Print a configuration rundown
 
 ```
 Plugins enabled: N
