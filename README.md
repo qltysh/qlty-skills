@@ -7,6 +7,7 @@ Prompts and skills for AI coding tools to help you set up and manage [Qlty](http
 | Skill | Description |
 |-------|-------------|
 | [setup-coverage](skills/setup-coverage/SKILL.md) | Set up code coverage reporting in CI using Qlty Cloud |
+| [setup-qlty-toml](skills/setup-qlty-toml/SKILL.md) | Configure `qlty.toml` for static analysis with the Qlty CLI and Qlty Cloud |
 
 ## Installation
 
@@ -20,7 +21,7 @@ Prompts and skills for AI coding tools to help you set up and manage [Qlty](http
 /plugin install qlty-skills@qlty
 ```
 
-Skills are then available as `/qlty-skills:setup-coverage`.
+Skills are then available as `/qlty-skills:setup-coverage` and `/qlty-skills:setup-qlty-toml`.
 
 ### Cursor
 
