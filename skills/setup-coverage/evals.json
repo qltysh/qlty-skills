@@ -50,7 +50,7 @@
     {
       "id": 4,
       "prompt": "IMPORTANT: This repo is a fork at dh-sandbox/flagsmith. When creating the PR, use: gh pr create --repo dh-sandbox/flagsmith --head qlty-coverage-integration --base main",
-      "expected_output": "PR created with coverage tags for the Python backend and TypeScript frontend services. Uses tags (not merging) since this is a monorepo with independent services.",
+      "expected_output": "PR created with coverage tags for the Python backend and TypeScript frontend services. Uses tags (not merging) since the backend and frontend workflows are path-filtered, so a pull request runs only the test suite for the service that changed and the other service's coverage must be carried forward.",
       "files": [],
       "expectations": [
         "Created a PR on dh-sandbox/flagsmith",
@@ -177,6 +177,7 @@
         "Created a PR on dh-sandbox/openapi-typescript",
         "Used qltysh/qlty-action/coverage@v2 for upload",
         "Added coverage generation (vitest or similar)",
+        "Did NOT use coverage tags (every package's tests run on every pull request)",
         "CI test jobs pass on the PR"
       ]
     },

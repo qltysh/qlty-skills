@@ -74,11 +74,12 @@ If the project is NOT generating coverage data yet, then add the minimal configu
   - Include all unit test suites (most important for line coverage)
   - Include integration test suites only if they provide significant additional coverage value
   - Include end-to-end (E2E) test suites if they generate code coverage data
-- **Coverage merging or tags?**
+- **Coverage merging or tags?** Choose the simplest setup that works.
   - If only one test suite: no merging or tags needed
-  - If multiple test suites: choose between server-side coverage merging and coverage tags:
-    - **Coverage tags**: Best for monorepos with independent services/packages where you want per-component coverage visibility and carry-forward when only some components' tests run. Use `tag: <name>` on each upload — no `coverage-complete` job needed.
-    - **Server-side merging**: Best when multiple test suites cover the same codebase and you want a single combined coverage number. Two approaches:
+  - If multiple test suites: use server-side coverage merging, unless CI runs the test suites selectively:
+    - **Coverage tags**: Use only when CI runs test suites selectively, so a pull request runs some suites and skips others. The usual case is a monorepo that only runs the tests for the service that changed (path filters such as `paths:` on workflow triggers, or a change-detection step that skips jobs). Each suite uploads with `tag: <name>`, and Qlty carries forward the latest coverage for the tags that did not run, so every commit still gets complete coverage — no `coverage-complete` job needed. Read https://docs.qlty.sh/coverage/carry-forward-tags.
+    - Do NOT add tags just to get separate coverage metrics per service, package, or test suite. That is a more advanced setup the user can opt into later. When every suite runs on every pull request, use server-side merging, and mention in the final report that Components (https://docs.qlty.sh/coverage/components) group coverage by file path and can be changed without touching CI.
+    - **Server-side merging**: The default for multiple uploads, including monorepos where every suite runs on every pull request. Two approaches:
       - **Parts count** (`total-parts-count: N`): Use when the number of uploads is fixed and known (e.g., a matrix with a static list). Simpler — no separate completion job needed.
       - **Incomplete/complete**: Use when the number of uploads is dynamic or unknown. Each upload uses `incomplete: true`, then a final job signals completion with `command: complete`. Example:
         ```yaml
@@ -162,3 +163,4 @@ When done, report:
    - Confirm the uploaded report appears on the coverage reports page above
    - After merging the PR to the default branch, verify coverage shows on the project's Overview page
    - Optionally, enable coverage commit status checks in the project's Review Config settings (`https://qlty.sh/gh/<org>/projects/<repo>/settings/review`) to enforce coverage thresholds on PRs
+   - If the repo has several services or packages, optionally define Components to see coverage per service or package. Components group coverage by file path, so they need no CI changes. See https://docs.qlty.sh/coverage/components
